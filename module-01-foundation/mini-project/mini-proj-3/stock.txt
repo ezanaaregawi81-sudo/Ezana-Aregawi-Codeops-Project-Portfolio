@@ -1,0 +1,5 @@
+paracetamol,25
+amoxicillin,8
+vitamin_c,15
+ibuprofen,5
+cough_syrup,12
