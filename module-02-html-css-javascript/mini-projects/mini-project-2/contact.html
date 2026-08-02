@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Habesha Eatery, Bole</title>
+    <meta name="description" content="Get in touch with Habesha Eatery in Bole, Addis Ababa. View our opening hours and send us a message directly.">
+</head>
+<body>
+    <header>
+        <h1>Contact Habesha Eatery</h1>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="index.html">Reservations</a></li>
+            <li><a href="contact.html" aria-current="page">Contact</a></li>
+        </ul>
+    </nav>
+    
+    <main>
+        <h2>Get In Touch</h2>
+        
+        <!-- Contact Form -->
+        <form action="/contact" method="post">
+            <p>
+                <label for="name">Name:</label>
+                <input id="name" name="name" type="text" required>
+            </p>
+            <p>
+                <label for="email">Email Address:</label>
+                <input id="email" name="email" type="email" required>
+            </p>
+            <p>
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" rows="5" required></textarea>
+            </p>
+            <button type="submit">Send Message</button>
+        </form>
+        
+        <hr>
+        
+        <table>
+            <caption>Habesha Eatery Weekly Opening Hours</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Day</th>
+                    <th scope="col">Hours</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">Monday - Friday</th>
+                    <td>11:00 AM - 10:00 PM</td>
+                </tr>
+                <tr>
+                    <th scope="row">Saturday</th>
+                    <td>10:00 AM - 11:00 PM</td>
+                </tr>
+                <tr>
+                    <th scope="row">Sunday</th>
+                    <td>12:00 PM - 09:00 PM</td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+    
+    <footer>
+        <p>Bole, Addis Ababa | Phone: +251 911 234 567</p>
+    </footer>
+</body>
+</html>
