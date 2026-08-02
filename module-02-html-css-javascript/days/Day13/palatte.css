@@ -1,0 +1,35 @@
+.btn-palette {
+  padding: 12px 24px;
+  font-family: system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: background-color 0.2s ease;
+}
+
+.btn-brand {
+  background-color: hsl(212, 68%, 33%);
+  color: #ffffff;
+}
+.btn-brand:hover {
+  background-color: hsl(212, 68%, 45%);
+}
+
+.btn-gold {
+  background-color: hsl(42, 69%, 49%);
+  color: #2d3748;
+}
+.btn-gold:hover {
+  background-color: hsl(42, 69%, 61%);
+}
+
+.btn-slate {
+  background-color: hsl(218, 23%, 23%);
+  color: #ffffff;
+}
+.btn-slate:hover {
+  background-color: hsl(218, 23%, 35%);
+}

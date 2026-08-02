@@ -1,0 +1,8 @@
+p { color: black; }        /* Element selector */
+.note { color: blue; }     /* Class selector */
+#lead { color: green; }    /* ID selector */
+
+/* Specificity Score (Inline, ID, Class, Element)
+    /*   p { 0, 0, 0, 1 }         Element selector */
+    /* .note { 0, 0, 1, 0 }     Class selector */
+    /* #lead { 0, 1, 0, 0 }    ID selector */
