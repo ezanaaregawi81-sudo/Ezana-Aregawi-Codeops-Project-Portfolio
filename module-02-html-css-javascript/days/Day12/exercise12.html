@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethio Telecom Registration</title>
+</head>
+<body>
+    <main>
+        <!-- 
+          Justification for POST method: 
+          We are using POST because this is a registration form that submits personal user data 
+          (name, email, phone). POST sends data in the request body rather than appending it 
+          to the URL, ensuring private information is not exposed in the browser history, 
+          bookmarked, or shared.
+        -->
+        <form action="/register" method="post">
+            <fieldset>
+                <legend>Ethio Telecom Registration Form</legend>
+                
+                <p>
+                    <label for="fullname">Full Name:</label>
+                    <input type="text" id="fullname" name="fullname" required>
+                </p>
+                
+                <p>
+                    <label for="email">Email Address:</label>
+                    <input type="email" id="email" name="email" required>
+                </p>
+                
+                <p>
+                    <label for="tel">Phone Number:</label>
+                    <input type="tel" id="tel" name="tel" pattern="\+251[0-9]{9}" required aria-describedby="tel-desc">
+                    <span id="tel-desc" style="display: block; font-size: 0.85em; color: #555;">Format: +251 followed by 9 digits.</span>
+                </p>
+                
+                <p>
+                    <label for="branch">Preferred Branch:</label>
+                    <select id="branch" name="branch" required>
+                        <option value="">-- Please select a branch --</option>
+                        <option value="bole">Bole</option>
+                        <option value="kazanchis">Kazanchis</option>
+                        <option value="piassa">Piassa</option>
+                    </select>
+                </p>
+                
+                <button type="submit">Register</button>
+            </fieldset>
+        </form>
+    </main>
+</body>
+</html>
