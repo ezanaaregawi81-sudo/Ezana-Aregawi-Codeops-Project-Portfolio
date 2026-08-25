@@ -1,0 +1,137 @@
+:root {
+ 
+  --brand-primary: hsl(212, 68%, 33%);
+  --brand-hover: hsl(212, 68%, 45%); 
+  --text-main: hsl(210, 20%, 20%);
+  --text-muted: hsl(209, 49%, 40%);
+  --bg-card: hsl(0, 0%, 100%);
+  --bg-body: hsl(210, 20%, 96%);
+  --border-color: hsl(210, 14%, 89%);
+  --accent-color: hsl(25, 85%, 55%);
+
+
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  
+  --radius-card: 12px;
+  --radius-btn: 6px;
+  --font-stack: "Inter", sans-serif;
+}
+
+
+* {
+  box-sizing: border-box; 
+  margin: 0;
+  padding: 0;
+}
+
+
+body {
+  font-family: var(--font-stack); 
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  line-height: 1.6; 
+  font-size: 1rem; 
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+}
+
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-card);
+  padding: var(--space-lg);
+  max-width: 380px;
+  width: 100%;
+  margin: 0 auto; 
+}
+
+
+.business-name {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--brand-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.tagline {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: var(--space-md);
+}
+
+.description {
+  font-size: 0.95rem;
+  color: var(--text-main);
+  margin-bottom: var(--space-md);
+}
+
+
+.info-list {
+  list-style: none;
+  margin-bottom: var(--space-lg);
+}
+
+
+.info-list > li {
+  font-size: 0.9rem;
+  padding: var(--space-xs) 0;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.info-list > li:last-child {
+  border-bottom: none;
+}
+
+
+.btn {
+  display: inline-block;
+  width: 100%;
+  background-color: var(--brand-primary);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  padding: var(--space-sm) var(--space-md);
+  border: none;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+}
+
+
+.btn:hover {
+  background-color: var(--brand-hover);
+}
+
+
+.btn:focus {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+
+
+.card-header::before {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 4px;
+  background-color: var(--accent-color);
+  border-radius: 2px;
+  margin-bottom: var(--space-xs);
+}
+
+
+.required::after {
+  content: " ★";
+  color: var(--accent-color);
+}

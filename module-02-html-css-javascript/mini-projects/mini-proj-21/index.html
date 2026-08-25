@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Validated Persistent Signup Form</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="card">
+    <h1>Signup Form</h1>
+    <p class="count">People signed up: <strong id="count">0</strong></p>
+
+    <form id="signup-form" novalidate>
+      <label for="name">Full Name</label>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        placeholder="e.g. Abebe Kebede"
+        autocomplete="name"
+      />
+
+      <label for="phone">Phone Number</label>
+      <input
+        type="tel"
+        id="phone"
+        name="phone"
+        placeholder="e.g. 0912345678 or +251912345678"
+        autocomplete="tel"
+      />
+
+      <!-- Dedicated error area -->
+      <div id="error" aria-live="polite"></div>
+
+      <button type="submit">Sign Up</button>
+    </form>
+  </div>
+
+  <script src="app.js">
+   
+  </script>
+</body>
+</html>

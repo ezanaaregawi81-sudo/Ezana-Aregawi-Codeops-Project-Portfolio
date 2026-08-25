@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Country Facts Explorer</title>
+  <!-- <link rel="stylesheet" href="style.css"> -->
+</head>
+<body>
+  <main class="card">
+    <header class="card-header">
+      <h1>Country Facts</h1>
+      <p>Explore quick statistics using real-time API data.</p>
+    </header>
+    
+
+    <form id="search-form" class="search-box">
+      <input 
+        type="text" 
+        id="country-input" 
+        placeholder="Enter country name (e.g., Ethiopia)"
+        value="Ethiopia"
+        required
+      >
+      <button type="submit" id="btn">Search</button>
+    </form>
+
+   
+    <section id="facts" class="facts-container" aria-live="polite">
+
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

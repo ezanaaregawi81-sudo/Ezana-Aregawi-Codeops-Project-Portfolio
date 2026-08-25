@@ -1,23 +1,138 @@
-/* CSS */
-.flight-schedule {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: system-ui, sans-serif;
+*{
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
 }
 
-.flight-schedule th {
-  background-color: #1b4d8e;
-  color: #ffffff;
-  text-align: left;
-  padding: 12px 16px;
+/* root to holde common styles */
+/* Exercise 1 */
+:root{
+    --bkg: rgb(21, 118, 202);
+    --text: rgb(236, 236, 236);
+    --space: 10px;
+    --stack: "Helvetica Neue", Arial, sans-serif;
+
+    /* color light blue */
+  --color-1-hex: #1e88e5;
+  --color-1-rgb: rgb(30, 136, 229);
+  --color-1-hsl: hsl(207, 80%, 51%);
+  --color-1-hsl-hover: hsl(207, 80%, 66%);
+    /* color green */
+  --color-2-hex: #43a047;
+  --color-2-rgb: rgb(67, 160, 71);
+  --color-2-hsl: hsl(123, 41%, 45%);
+  --color-2-hsl-hover: hsl(123, 41%, 60%);
+
+    /* color black */
+  --color-3-hex: #212121;
+  --color-3-rgb: rgb(33, 33, 33);
+  --color-3-hsl: hsl(0, 0%, 13%);
+  --color-3-hsl-hover: hsl(0, 0%, 28%);
 }
 
-.flight-schedule td {
-  padding: 12px 16px;
-  border-bottom: 1px solid #e2e8f0;
+
+
+
+.btn {
+    display: inline-block;
+    background-color: var(--bkg);
+    color: var(--text);
+    font-family: var(--text3);
+    padding: var(--space);
+    margin: 20px 35px;
+    border: 0.5px solid currentColor; 
+    border-radius: 10px;
 }
 
-/* Zebra striping for even rows */
-.flight-schedule tbody tr:nth-child(even) {
-  background-color: #f7fafc;
+.btn::before{
+    content: "Make me pretty";
+}
+.btn:hover::before {
+    content: "I am pretty";
+    color: rgb(243, 204, 146);
+    cursor: pointer;
+}
+
+/* Exercise 2  content-box vs border-box*/
+
+#render{
+    box-sizing: content-box;  
+    /* Expected render 352px(width plus all the extra pixels from padding and others) */
+    
+    box-sizing: border-box;
+    /*Expected render 300px as we wanted*/
+
+    width: 300px;
+    padding: 24px;
+    border: 2px solid black;
+    margin: 20px 20px;
+}
+
+/* Exercise-3. specifity rule */
+
+p{
+    color: rgb(252, 2, 252);
+    margin: 10px 30px;
+}
+
+.class{
+    color: red;
+}
+
+#id{
+    color: blue; /*winner because id is more specific*/
+}
+
+/* Table with zebra row */
+table{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td{
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 0.75px solid black;
+}
+
+th{
+    background-color: rgba(45, 45, 45, 0.8);
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 700;
+}
+
+tr:nth-child(even){
+    background-color: rgba(45, 45, 45, 0.3);
+}
+
+/* Color conversion */
+
+button{
+    margin: 10px 30px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.btn-primary {
+  background-color: var(--color-1-hsl);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-1-hsl-hover);
+}
+
+.btn-secondary{
+    background-color: var(--color-2-rgb);
+}
+.btn-secondary:hover{
+    background-color: var(--color-2-hsl-hover);
+}
+
+.btn-teritary{
+    background-color: var(--color-3-hex);
+    color: blanchedalmond;
+}
+.btn-teritary:hover{
+    background-color: var(--color-3-hsl-hover);
 }
