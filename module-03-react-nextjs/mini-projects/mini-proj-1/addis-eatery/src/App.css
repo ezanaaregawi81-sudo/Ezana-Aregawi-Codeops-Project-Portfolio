@@ -1,0 +1,38 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+
+.header{
+  display: grid;
+  margin: 10px 0 0 0px;
+  background-color: rgba(40, 92, 30, 0.8);
+}
+
+.header h1{
+  color: aliceblue;
+  font-size: xx-large;
+}
+
+.card-container{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  background-color: rgba(27, 218, 68, 0.1);
+  margin-top: 1px;
+  padding: 20px 0;
+}
+
+.card{
+  margin: 5px;
+  padding: 15px;
+  border-radius: 8px;
+  display: grid;
+  background-color: rgba(148, 186, 9, 0.7);
+}
+
+.card p{
+  color: rgb(178, 53, 53);
+}
+.card span{
+  color: rgb(3, 2, 0, 0.8);
+}
