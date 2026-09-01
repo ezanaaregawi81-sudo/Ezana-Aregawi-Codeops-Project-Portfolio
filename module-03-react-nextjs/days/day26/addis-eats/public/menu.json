@@ -5,8 +5,9 @@
     {"id": 4, "name": "Keywet", "price": "300", "category": "Main-dish", "isSpicy": true},
     {"id": 5, "name": "Salad", "price": "150", "category": "Side-dish", "isSpicy": false},
     {"id": 6, "name": "Kurt", "price": "600", "category": "Main-dish", "isSpicy": false},
-    {"id": 7, "name": "Ambo", "price": "100", "category": "Beverage", "isSpicy": false},
+    {"id": 7, "name": "cool", "price": "100", "category": "Beverage", "isSpicy": false},
     {"id": 8, "name": "Soft-drinks", "price": "80", "category": "Beverage", "isSpicy": false},
-    {"id": 9, "name": "Shiro", "price": "run", "category": "Main-dish", "isSpicy": true}
+    {"id": 9, "name": "water", "price": "80", "category": "Beverage", "isSpicy": false},
+    {"id": 10, "name": "Shiro", "price": "100", "category": "Main-dish", "isSpicy": true}
 ]
 }
