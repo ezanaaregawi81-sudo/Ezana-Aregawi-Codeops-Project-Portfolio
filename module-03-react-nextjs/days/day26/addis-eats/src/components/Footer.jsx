@@ -1,13 +1,10 @@
-import '../style.css'
+import React from 'react'
 
 function Footer() {
-
   return (
-   <div>
-     
-    <p>&copy; 2026 Ezana Aregawi. All rights reserved.</p>
-
-   </div>
+    <div>
+      <footer>Made by Ezana</footer>
+    </div>
   )
 }
 

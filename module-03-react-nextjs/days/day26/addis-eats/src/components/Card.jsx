@@ -1,13 +1,10 @@
-function Card(prop) {
+import React from 'react'
 
+function Card({children}) {
   return (
-   <>
-    <div className="card">
-        <h1>{prop.name}</h1>
-        <p>{prop.price}</p>
-
+    <div>
+      {children}
     </div>
-   </>
   )
 }
 
