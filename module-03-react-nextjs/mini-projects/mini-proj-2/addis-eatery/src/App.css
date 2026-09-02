@@ -1,0 +1,49 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+
+body{
+  background-color: rgb(200, 183, 161);
+}
+
+.header{
+  display: grid;
+  margin: 10px 0 10px 0;
+  padding: 10px 40px;
+  background-color: rgba(180, 169, 121, 0.8);
+  border-radius: 200%;
+}
+
+.header h1{
+  text-align: center;
+  color: aliceblue;
+  font-size: xx-large;
+}
+
+.menu{
+  text-align: center;
+  font-weight: 800;
+  color: rgb(100, 50, 50);
+}
+
+.card-container{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  background-color: rgba(50, 50, 50, 0.1);
+  margin-top: 1px;
+  padding: 50px 0;
+}
+
+.card{
+  margin: 5px;
+  padding: 25px;
+  border-radius: 8px;
+  display: grid;
+  background-color: rgba(50, 50, 50, 0.5);
+}
+
+.card p{
+  padding: 10px 0;
+  color: antiquewhite;
+}
