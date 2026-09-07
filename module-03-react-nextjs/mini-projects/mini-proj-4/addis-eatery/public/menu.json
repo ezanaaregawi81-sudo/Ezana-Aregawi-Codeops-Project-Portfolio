@@ -1,0 +1,88 @@
+{
+    "items": [
+  {
+    "id": 1,
+    "name": "Injera with Shiro",
+    "category": "Main",
+    "price": 180,
+    "description": "Soft injera with spicy chickpea stew"
+  },
+  {
+    "id": 2,
+    "name": "Doro Wat",
+    "category": "Main",
+    "price": 320,
+    "description": "Chicken stewed in berbere sauce with egg"
+  },
+  {
+    "id": 3,
+    "name": "Tibs",
+    "category": "Main",
+    "price": 280,
+    "description": "Sautéed beef with onions and peppers"
+  },
+  {
+    "id": 4,
+    "name": "Kitfo",
+    "category": "Main",
+    "price": 350,
+    "description": "Minced raw beef with spiced butter"
+  },
+  {
+    "id": 5,
+    "name": "Sambusa",
+    "category": "Appetizer",
+    "price": 80,
+    "description": "Crispy pastry filled with lentils"
+  },
+  {
+    "id": 6,
+    "name": "Timatim Salad",
+    "category": "Appetizer",
+    "price": 90,
+    "description": "Fresh tomato and onion salad"
+  },
+  {
+    "id": 7,
+    "name": "Firfir",
+    "category": "Breakfast",
+    "price": 150,
+    "description": "Torn injera mixed with berbere sauce"
+  },
+  {
+    "id": 8,
+    "name": "Chechebsa",
+    "category": "Breakfast",
+    "price": 140,
+    "description": "Torn flatbread with spiced butter"
+  },
+  {
+    "id": 9,
+    "name": "Ethiopian Coffee",
+    "category": "Drinks",
+    "price": 60,
+    "description": "Traditional buna with incense"
+  },
+  {
+    "id": 10,
+    "name": "Fresh Juice",
+    "category": "Drinks",
+    "price": 70,
+    "description": "Seasonal fruit juice"
+  },
+  {
+    "id": 11,
+    "name": "Tej",
+    "category": "Drinks",
+    "price": 120,
+    "description": "Honey wine"
+  },
+  {
+    "id": 12,
+    "name": "Atkilt Wat",
+    "category": "Main",
+    "price": 160,
+    "description": "Vegetable stew with cabbage and carrots"
+  }
+    ]
+}
