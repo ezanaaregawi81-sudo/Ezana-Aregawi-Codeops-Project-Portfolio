@@ -1,0 +1,21 @@
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+
+# misc
+.DS_Store
+*.pem
+npm-debug.log*
+
+# local secrets - never commit
+.env*
+!.env.example
+
+# auto-generated AI agent instructions (next dev)
+/AGENTS.md
+/CLAUDE.md
