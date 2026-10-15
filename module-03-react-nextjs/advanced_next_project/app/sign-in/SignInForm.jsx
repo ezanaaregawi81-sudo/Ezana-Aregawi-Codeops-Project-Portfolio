@@ -1,6 +1,7 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect, useRef } from 'react';
+import { useSubmitOnce } from '@/lib/use-submit-once';
 import { signIn } from './actions';
 
 const inputStyle = {
@@ -10,15 +11,23 @@ const inputStyle = {
   background: 'rgba(255, 255, 255, 0.05)',
   border: '1px solid var(--border-color)',
   color: 'var(--text-primary)',
+  minHeight: '44px',
 };
 
 const labelStyle = { display: 'block', fontSize: '0.9rem', marginBottom: '0.4rem', color: 'var(--text-secondary)' };
 
 export default function SignInForm({ next }) {
   const [state, formAction, pending] = useActionState(signIn, { status: null });
+  // A failed sign-in leaves focus nowhere (the button was disabled while pending). Put it back in
+  // the email field; the error is still announced by role="alert".
+  const submitOnce = useSubmitOnce(pending);
+  const emailRef = useRef(null);
+  useEffect(() => {
+    if (state.error) emailRef.current?.focus();
+  }, [state]);
 
   return (
-    <form action={formAction} className="card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+    <form action={formAction} onSubmit={submitOnce} className="card" style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       <input type="hidden" name="next" value={next} />
 
       <div>
@@ -26,6 +35,7 @@ export default function SignInForm({ next }) {
           Email
         </label>
         <input
+          ref={emailRef}
           id="sign-in-email"
           name="email"
           type="email"

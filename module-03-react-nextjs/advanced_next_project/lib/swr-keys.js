@@ -1,8 +1,6 @@
 // Every SWR key the app uses is built here. The server pages build their fallback keys with
 // the same functions, so seeded data lands on exactly the key the client asks for.
 
-export const orderUrl = (orderId) => `/api/orders/${encodeURIComponent(orderId)}`;
-
 export function dishPageUrl(category, page) {
   const params = new URLSearchParams();
   if (category && category !== 'All') params.set('category', category);

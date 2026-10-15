@@ -5,6 +5,7 @@ import { use, useEffect, useMemo, useState } from 'react';
 import { addToCart, getCart, removeFromCart, updateItemQuantity } from '@/lib/cart';
 import { getDishById } from '@/lib/dishes';
 import { computeTotals } from '@/lib/pricing';
+import { etb } from '@/lib/format';
 import { useCartContext } from '../Providers';
 
 export default function CartPage({ searchParams }) {
@@ -48,7 +49,8 @@ export default function CartPage({ searchParams }) {
       <h1 style={{ fontSize: '2.2rem', fontWeight: '800', marginBottom: '0.25rem' }}>Your Food Order Cart</h1>
       <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Review your selected Ethiopian dishes before checking out.</p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '2rem' }}>
+      {/* Items beside the summary; stacked on narrow screens (globals.css .cart-layout). */}
+      <div className="cart-layout">
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {cartItems.length === 0 ? (
             <div className="card" style={{ padding: '2rem', textAlign: 'center' }}>
@@ -88,14 +90,14 @@ export default function CartPage({ searchParams }) {
                           </option>
                         ))}
                       </select>
-                      × {Number(item.price || 0)} ETB
+                      × {etb(item.price)}
                     </div>
                   </div>
                 </div>
 
                 <div style={{ textAlign: 'right' }}>
                   <span style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--accent-gold)' }}>
-                    {Number(item.price || 0) * Number(item.qty || 0)} ETB
+                    {etb(Number(item.price || 0) * Number(item.qty || 0))}
                   </span>
                   <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.5rem', alignItems: 'center' }}>
                     <Link href={`/menu/${item.id}`} style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textDecoration: 'underline' }}>
@@ -138,20 +140,20 @@ export default function CartPage({ searchParams }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem', fontSize: '0.95rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-secondary)' }}>Subtotal</span>
-              <span>{subtotal} ETB</span>
+              <span>{etb(subtotal)}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-secondary)' }}>Delivery Fee (Addis)</span>
-              <span>{deliveryFee} ETB</span>
+              <span>{etb(deliveryFee)}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-secondary)' }}>VAT (15%)</span>
-              <span>{tax} ETB</span>
+              <span>{etb(tax)}</span>
             </div>
 
             <div style={{ borderTop: '1px dashed var(--border-color)', paddingTop: '0.75rem', marginTop: '0.5rem', display: 'flex', justifyContent: 'space-between', fontWeight: '800', fontSize: '1.2rem' }}>
               <span>Total</span>
-              <span style={{ color: 'var(--accent-gold)' }}>{total} ETB</span>
+              <span style={{ color: 'var(--accent-gold)' }}>{etb(total)}</span>
             </div>
           </div>
 

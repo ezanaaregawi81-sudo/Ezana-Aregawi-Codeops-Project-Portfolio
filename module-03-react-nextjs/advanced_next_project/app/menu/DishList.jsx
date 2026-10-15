@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { DISH_CARD_SIZES, DISH_PHOTO, dishPhotoAlt, dishPhotoSrc } from '@/lib/dish-photos';
+import { etb } from '@/lib/format';
 import AddToCartButton from '../AddToCartButton';
 
 export default function DishList({ dishes }) {
@@ -47,7 +48,7 @@ export default function DishList({ dishes }) {
 
             <div className="dish-footer">
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span className="dish-price">{dish.priceFormatted}</span>
+                <span className="dish-price">{etb(dish.price)}</span>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                   {dish.spiceLevel}
                 </span>

@@ -119,3 +119,11 @@ How these were run:
 - **In-memory storage:** sessions, orders and the revoked set are all in memory, so a server restart clears them.
 - **Deployed on Vercel:** each request may run on a different serverless instance with its own memory. An order may be missing on the next request, and a sign-out may not reach every instance. It's reliable on a single `next start` process. A shared store (Postgres or Redis) would fix it, and leaving it out was a deliberate choice for this project.
 - The kitchen can view orders but can't change them. Order statuses still advance on a timer.
+
+## Added in the final version (mini-projects 19–20)
+
+- **No double orders.** `disabled={pending}` alone let two clicks in the same instant place two orders. Checkout, cancel and sign-in also run `onSubmit={useSubmitOnce(pending)}`, and the server keeps a `requestId` per checkout (or an `Idempotency-Key` on `POST /api/orders`) and returns the order already placed. Tested: one order for a double Enter, two simultaneous clicks, a touch double tap, and the same key three times.
+- **The live feed** (`GET /api/orders/[id]/events`) checks the session and the owner before streaming anything: 401 signed out, 404 for someone else's order.
+- **The history download** (`/orders/history.csv`) only ever contains the signed-in account's orders.
+- **A missing `SESSION_SECRET`** leaves signed-out pages working but breaks sign-in, with a message that says where to set it (`.env.local` locally, Settings → Environment Variables on Vercel, one value per environment).
+- **No secret in the browser.** The 15 JavaScript files a browser downloads (fetched over HTTP by `scripts/verify-deploy.mjs`) and `.next/static` contain neither the secret's value nor the name `SESSION_SECRET`.

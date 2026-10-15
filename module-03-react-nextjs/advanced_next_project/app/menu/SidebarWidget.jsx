@@ -21,17 +21,21 @@ export default function SidebarWidget() {
         <span style={{ fontSize: '0.85rem', fontWeight: '500' }}>⭐ Saved Favorites:</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <button
+            type="button"
+            aria-label="Remove a favourite"
+            className="stepper-btn"
             onClick={() => setFavoriteCount((prev) => Math.max(0, prev - 1))}
-            style={{ width: '24px', height: '24px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'rgba(255,255,255,0.1)', color: '#fff', cursor: 'pointer' }}
           >
             -
           </button>
-          <span style={{ fontWeight: '800', color: 'var(--accent-gold)', minWidth: '16px', textAlign: 'center' }}>
+          <span aria-live="polite" style={{ fontWeight: '800', color: 'var(--accent-gold)', minWidth: '16px', textAlign: 'center' }}>
             {favoriteCount}
           </span>
           <button
+            type="button"
+            aria-label="Add a favourite"
+            className="stepper-btn"
             onClick={() => setFavoriteCount((prev) => prev + 1)}
-            style={{ width: '24px', height: '24px', borderRadius: '4px', border: '1px solid var(--border-color)', background: 'rgba(255,255,255,0.1)', color: '#fff', cursor: 'pointer' }}
           >
             +
           </button>
@@ -39,10 +43,11 @@ export default function SidebarWidget() {
       </div>
 
       <div>
-        <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
+        <label htmlFor="sidebar-note" style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
           Table Note:
         </label>
         <input
+          id="sidebar-note"
           type="text"
           value={specialNote}
           onChange={(e) => setSpecialNote(e.target.value)}
@@ -63,13 +68,13 @@ export default function SidebarWidget() {
           Quick links:
         </span>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.85rem' }}>
-          <Link href="/menu" style={{ color: 'var(--accent-gold)', textDecoration: 'underline' }}>
+          <Link href="/menu" className="quick-link">
             &bull; /menu
           </Link>
-          <Link href="/menu/kitfo" style={{ color: 'var(--accent-gold)', textDecoration: 'underline' }}>
+          <Link href="/menu/kitfo" className="quick-link">
             &bull; /menu/kitfo
           </Link>
-          <Link href="/menu/doro-wat" style={{ color: 'var(--accent-gold)', textDecoration: 'underline' }}>
+          <Link href="/menu/doro-wat" className="quick-link">
             &bull; /menu/doro-wat
           </Link>
         </div>

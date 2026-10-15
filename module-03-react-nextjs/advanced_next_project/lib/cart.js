@@ -45,8 +45,7 @@ export function addToCart(dish) {
           name: dish.name,
           price: Number(dish.price) || 0,
           qty: 1,
-          image: dish.image || '🍽️',
-          priceFormatted: dish.priceFormatted || `${Number(dish.price) || 0} ETB`,
+          image: dish.image || '🍽️',
         },
       ];
 

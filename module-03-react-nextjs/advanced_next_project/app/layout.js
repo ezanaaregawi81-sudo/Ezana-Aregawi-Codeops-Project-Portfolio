@@ -38,6 +38,11 @@ export default function RootLayout({ children }) {
     <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
       <body>
         <Providers>
+          {/* The first Tab stop on every page: past the header, straight to the content. Off-screen
+              until it has keyboard focus. */}
+          <a href="#main-content" className="skip-link">
+            Skip to content
+          </a>
           <div className="app-container">
             <header className="site-header">
               <div className="header-top">
@@ -71,7 +76,10 @@ export default function RootLayout({ children }) {
               </nav>
             </header>
 
-            <main className="main-content">{children}</main>
+            {/* tabIndex -1 lets the skip link move focus here, so the next Tab carries on from the content. */}
+            <main id="main-content" className="main-content" tabIndex={-1}>
+              {children}
+            </main>
 
             <footer className="site-footer">
               <p>© {new Date().getFullYear()} Addis Eats. Built with Next.js App Router (File-system Routing & Colocated Components).</p>

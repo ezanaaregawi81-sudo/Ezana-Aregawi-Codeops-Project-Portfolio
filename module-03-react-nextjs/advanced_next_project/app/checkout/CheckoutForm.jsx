@@ -1,10 +1,12 @@
 'use client';
 
-import { useActionState, useEffect, useState } from 'react';
+import { useActionState, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { clearCart, getCart } from '@/lib/cart';
-import { PAYMENT_METHODS } from '@/lib/order-schema';
+import { NEIGHBOURHOODS, PAYMENT_METHODS } from '@/lib/order-schema';
 import { computeTotals } from '@/lib/pricing';
+import { etb } from '@/lib/format';
+import { useSubmitOnce } from '@/lib/use-submit-once';
 import { placeOrder } from '../orders/actions';
 import { useCartContext } from '../Providers';
 
@@ -15,14 +17,29 @@ const inputStyle = {
   background: 'rgba(255, 255, 255, 0.05)',
   border: '1px solid var(--border-color)',
   color: 'var(--text-primary)',
+  minHeight: '44px',
 };
 
 const labelStyle = { display: 'block', fontSize: '0.9rem', marginBottom: '0.4rem', color: 'var(--text-secondary)' };
 
-const emptyValues = { name: '', phone: '', address: '', paymentMethod: 'telebirr' };
+const emptyValues = { name: '', phone: '', area: '', address: '', paymentMethod: 'telebirr' };
 
 export default function CheckoutForm() {
   const [state, formAction, pending] = useActionState(placeOrder, { status: null });
+  const submitOnce = useSubmitOnce(pending);
+  // One id per visit to checkout, created in the browser after hydration (created during render,
+  // the server HTML and the browser would disagree). The server places one order per id.
+  const [requestId, setRequestId] = useState('');
+  useEffect(() => setRequestId(crypto.randomUUID()), []);
+
+  // While pending the submit button is disabled and loses focus. If the result has errors, move
+  // focus to the first field to fix (or the error message) rather than leaving it on <body>.
+  const formRef = useRef(null);
+  useEffect(() => {
+    if (state.status === null || state.status === 201) return;
+    const target = formRef.current?.querySelector('[aria-invalid="true"]') ?? formRef.current?.querySelector('[role="alert"]');
+    target?.focus();
+  }, [state]);
   const [cartItems, setCartItems] = useState([]);
   const { refreshCart } = useCartContext();
 
@@ -57,7 +74,7 @@ export default function CheckoutForm() {
             Order Confirmed!
           </h2>
           <p className="state-text">
-            Thank you, {state.order.name}. Order <strong>{state.order.id}</strong> ({state.order.total} ETB) is being freshly
+            Thank you, {state.order.name}. Order <strong>{state.order.id}</strong> ({etb(state.order.total)}) is being freshly
             prepared and will be delivered shortly.
           </p>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -89,27 +106,42 @@ export default function CheckoutForm() {
       <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Complete your address and payment details below.</p>
 
       {/* key remounts the fields after each response so a 422 refills them with what was submitted */}
-      <form action={formAction} noValidate key={JSON.stringify(state)} className="card" style={{ padding: '2rem' }}>
+      <form ref={formRef} action={formAction} onSubmit={submitOnce} noValidate key={JSON.stringify(state)} className="card" style={{ padding: '2rem' }}>
         <input type="hidden" name="items" value={JSON.stringify(cartItems.map(({ id, qty }) => ({ id, qty })))} />
         <input type="hidden" name="paymentMethod" value={paymentMethod} />
+        <input type="hidden" name="requestId" value={requestId} />
 
         <h3 style={{ fontSize: '1.25rem', marginBottom: '1.25rem', color: 'var(--accent-gold)' }}>
           1. Delivery Address (Addis Ababa)
         </h3>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+        {/* Side by side when there is room, one per row on a phone (globals.css .form-row). */}
+        <div className="form-row form-row-halves">
           <Field label="Full Name" name="name" error={fieldErrors.name}>
-            <input id="checkout-name" name="name" type="text" defaultValue={values.name} placeholder="Abebe Bikila" style={inputStyle} />
+            <input id="checkout-name" name="name" type="text" aria-invalid={Boolean(fieldErrors.name)} aria-describedby={fieldErrors.name ? 'checkout-name-error' : undefined} defaultValue={values.name} placeholder="Abebe Bikila" style={inputStyle} />
           </Field>
           <Field label="Phone Number" name="phone" error={fieldErrors.phone}>
-            <input id="checkout-phone" name="phone" type="tel" defaultValue={values.phone} placeholder="0911 234 567" style={inputStyle} />
+            <input id="checkout-phone" name="phone" type="tel" aria-invalid={Boolean(fieldErrors.phone)} aria-describedby={fieldErrors.phone ? 'checkout-phone-error' : undefined} defaultValue={values.phone} placeholder="0911 234 567" style={inputStyle} />
           </Field>
         </div>
 
-        <div style={{ marginBottom: '2rem' }}>
-          <Field label="Delivery Location / Sub-city" name="address" error={fieldErrors.address}>
+        <div className="form-row form-row-third">
+          <Field label="Neighbourhood" name="area" error={fieldErrors.area}>
+            <select id="checkout-area" name="area" aria-invalid={Boolean(fieldErrors.area)} aria-describedby={fieldErrors.area ? 'checkout-area-error' : undefined} defaultValue={values.area} style={inputStyle}>
+              <option value="" disabled>
+                Choose…
+              </option>
+              {NEIGHBOURHOODS.map((area) => (
+                <option key={area} value={area}>
+                  {area}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Street, building or landmark" name="address" error={fieldErrors.address}>
             <input
               id="checkout-address"
+              aria-invalid={Boolean(fieldErrors.address)} aria-describedby={fieldErrors.address ? 'checkout-address-error' : undefined}
               name="address"
               type="text"
               defaultValue={values.address}
@@ -119,11 +151,13 @@ export default function CheckoutForm() {
           </Field>
         </div>
 
-        <h3 style={{ fontSize: '1.25rem', marginBottom: '1.25rem', color: 'var(--accent-gold)' }}>
+        <h3 id="payment-heading" style={{ fontSize: '1.25rem', marginBottom: '1.25rem', color: 'var(--accent-gold)' }}>
           2. Payment Method
         </h3>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '0.5rem' }}>
+        {/* aria-pressed toggle buttons, each a Tab stop picked with Enter, named as one group by the
+            heading. Radios would need arrow keys, and Enter on a radio submits the form. */}
+        <div role="group" aria-labelledby="payment-heading" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '0.5rem' }}>
           {PAYMENT_METHODS.map((m) => (
             <button
               key={m.id}
@@ -151,17 +185,17 @@ export default function CheckoutForm() {
 
         {fieldErrors.items && <p className="field-error" style={{ marginTop: '1rem' }}>{fieldErrors.items}</p>}
         {formError && (
-          <p role="alert" className="form-error">
+          <p role="alert" className="form-error" tabIndex={-1}>
             {formError}
           </p>
         )}
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem', marginTop: '1.5rem' }}>
+        <div className="form-actions">
           <Link href="/cart" className="btn btn-secondary" id="checkout-back-cart-link">
             &larr; Back to Cart
           </Link>
           <button type="submit" className="btn btn-primary" style={{ padding: '0.9rem 2rem' }} id="place-order-submit-btn" disabled={pending}>
-            {pending ? 'Placing order…' : `Place Order · ${total} ETB 🚀`}
+            {pending ? 'Placing order…' : `Place Order · ${etb(total)} 🚀`}
           </button>
         </div>
       </form>

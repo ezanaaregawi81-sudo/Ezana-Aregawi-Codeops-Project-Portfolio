@@ -363,7 +363,7 @@ a {
 .hero-credit {
   align-self: flex-end;
   margin: 0.4rem 0 2rem;
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   color: var(--text-secondary);
 }
 
@@ -667,4 +667,332 @@ a {
   font-family: var(--font-heading);
   font-weight: 700;
   border-bottom-color: var(--accent-gold);
+}
+
+/* Kitchen dashboard (/kitchen/dashboard) */
+.dashboard { max-width: 1040px; margin: 0 auto; }
+.dashboard-header { margin-bottom: 1.5rem; }
+.dashboard-header h1 { font-family: var(--font-heading); font-size: 2.3rem; font-weight: 700; margin: 0.35rem 0 0.25rem; color: var(--accent-green); }
+.dashboard-header p { color: var(--text-secondary); }
+.back-link { font-size: 0.85rem; font-weight: 600; color: var(--accent-gold); }
+
+.dashboard-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 0 0 1.25rem; }
+.dashboard-stats > div { padding: 1rem 1.25rem; border-top: 4px solid var(--accent-green); }
+.dashboard-stats dt { font-size: 0.82rem; color: var(--text-secondary); }
+.dashboard-stats dd { margin: 0.2rem 0 0; font-size: 1.5rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+
+.dashboard-card { margin-bottom: 1.25rem; }
+.dashboard-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 1rem; }
+.dashboard-title span { font-weight: 400; color: var(--text-secondary); }
+
+/* A fixed height: ResponsiveContainer sizes from its parent, which must have a height before the
+   chart script runs, or the chart is drawn at 0px and the page jumps. */
+.chart-frame { height: 300px; width: 100%; }
+
+.chart-data { margin-top: 1rem; }
+.chart-data summary { cursor: pointer; font-weight: 600; color: var(--accent-green); margin-bottom: 0.75rem; }
+
+.table-wrap { overflow-x: auto; }
+.report-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.report-table caption { caption-side: top; text-align: left; font-size: 0.85rem; color: var(--text-secondary); padding-bottom: 0.6rem; }
+.report-table th, .report-table td { padding: 0.55rem 0.75rem; text-align: left; white-space: nowrap; }
+/* No text-transform on headers: copied text keeps the CSS case, and a spreadsheet wants "Total (ETB)". */
+.report-table thead th { background: var(--bg-card-hover, #f2e9d8); font-size: 0.82rem; font-weight: 700; color: var(--text-secondary); border-bottom: 2px solid var(--border-color); }
+/* Zebra rows: easy to follow a row from the name across to its total. */
+.report-table tbody tr:nth-child(even) { background: rgba(47, 82, 51, 0.05); }
+.report-table tbody th { font-weight: 600; }
+.report-table tfoot th, .report-table tfoot td { font-weight: 800; border-top: 2px solid var(--border-color); }
+/* Numbers on the right with equal-width digits, so totals compare at a glance. */
+.report-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.order-id { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.8rem; }
+
+.sort-link { color: inherit; }
+.report-table th[aria-sort] .sort-link { color: var(--accent-green); }
+/* Arrows are CSS, not text, so they don't end up in a copied header. */
+.sort-link::after { content: ' ⇅'; opacity: 0.5; }
+.sort-link.sorted-asc::after { content: ' ↑'; opacity: 1; }
+.sort-link.sorted-desc::after { content: ' ↓'; opacity: 1; }
+
+.pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-top: 1rem; font-size: 0.9rem; }
+.pagination ol { display: flex; flex-wrap: wrap; gap: 0.3rem; list-style: none; padding: 0; margin: 0; }
+.pagination a, .pagination span { display: inline-block; min-width: 2.1rem; padding: 0.3rem 0.6rem; border: 1px solid var(--border-color); border-radius: 999px; text-align: center; }
+.pagination a:hover { border-color: var(--accent-green); }
+.pagination [aria-current='page'] { background: var(--accent-green); border-color: var(--accent-green); color: #fffdf8; font-weight: 700; }
+.pagination [aria-disabled='true'] { color: var(--text-secondary); border-style: dashed; }
+
+/* My Orders: intro line and the CSV download */
+.orders-intro { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 2rem; }
+.export-csv { padding: 0.5rem 1rem; font-size: 0.88rem; }
+
+/* Live tracking (/orders/[id]) */
+.live-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 1.25rem; }
+
+/* The connection badge: the words carry the meaning, the square light only repeats them. */
+.live-badge { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.3rem 0.8rem; border-radius: var(--radius-full); border: 1px solid var(--border-color); background: var(--bg-main); font-size: 0.82rem; font-weight: 700; color: var(--text-secondary); }
+.live-light { width: 0.55rem; height: 0.55rem; border-radius: 2px; background: var(--text-muted); }
+.live-badge-good { color: var(--accent-green); border-color: rgba(47, 82, 51, 0.35); }
+.live-badge-good .live-light { background: var(--accent-green); animation: live-blink 1.6s ease-in-out infinite; }
+.live-badge-warn .live-light { background: var(--accent-amber); }
+.live-badge-bad { color: var(--accent-red); border-color: rgba(184, 67, 58, 0.35); }
+.live-badge-bad .live-light { background: var(--accent-red); }
+@keyframes live-blink { 50% { opacity: 0.35; } }
+@media (prefers-reduced-motion: reduce) { .live-badge-good .live-light { animation: none; } }
+
+/* Words on the left, map on the right; on a phone the words come first, then the map. */
+.courier { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 1.5rem; align-items: start; margin-top: 1.75rem; }
+@media (max-width: 760px) { .courier { grid-template-columns: 1fr; } }
+.courier-title { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; margin-bottom: 0.6rem; }
+.courier-where { font-size: 1rem; line-height: 1.55; color: var(--text-primary); margin-bottom: 0.9rem; }
+.courier-facts ul { list-style: none; display: grid; gap: 0.4rem; font-size: 0.9rem; color: var(--text-secondary); }
+.courier-facts strong { color: var(--text-primary); }
+
+/* An explicit height, shared by the placeholder and the map: Leaflet needs a sized box, and the
+   swap from one to the other moves nothing on the page. */
+.courier-map { height: 340px; width: 100%; border-radius: var(--radius-md); border: 1px solid var(--border-color); overflow: hidden; position: relative; z-index: 0; }
+.courier-map-waiting { display: flex; align-items: center; justify-content: center; background: repeating-linear-gradient(45deg, var(--bg-main), var(--bg-main) 12px, var(--bg-card-hover) 12px, var(--bg-card-hover) 24px); color: var(--text-secondary); font-size: 0.9rem; }
+
+/* The two map labels. The courier's sits above its point and the drop-off's below, so when both
+   are on one spot (arrived) they stack instead of covering each other. Leaflet sizes and offsets
+   marker boxes inline; these labels size themselves. */
+.courier-marker { width: auto !important; height: auto !important; margin: 0 !important; white-space: nowrap; padding: 0.25rem 0.55rem; border-radius: var(--radius-sm); font-size: 0.8rem; font-weight: 700; background: var(--bg-card); color: var(--text-primary); border: 2px solid var(--text-primary); box-shadow: var(--shadow-sm); }
+.courier-marker-rider { border-color: var(--accent-gold); translate: -50% calc(-100% - 4px); }
+.courier-marker-drop { border-color: var(--accent-green); translate: -50% 4px; }
+
+/* Mini-project 20: keyboard and touch */
+
+/* One visible focus ring for every keyboard stop: dark brown, 3px, set 3px out so it reads on the
+   terracotta buttons and the cream page alike. Mouse clicks don't draw it; Tab always does. */
+:focus-visible {
+  outline: 3px solid var(--text-primary);
+  outline-offset: 3px;
+}
+
+/* The search input has no outline of its own (it sits inside a pill), so the pill carries the
+   ring while the input inside it has focus. */
+.menu-search:focus-within {
+  outline: 3px solid var(--text-primary);
+  outline-offset: 3px;
+}
+
+.search-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0.4rem 0 0 1rem;
+}
+
+main:focus {
+  outline: none;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -200px;
+  z-index: 300;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1.1rem;
+  border-radius: var(--radius-full);
+  background: var(--text-primary);
+  color: var(--bg-main);
+  font-weight: 700;
+}
+
+.skip-link:focus {
+  top: 0.75rem;
+}
+
+/* Every touch target at least 44 × 44 CSS pixels. */
+.nav-link,
+.brand-logo,
+.btn,
+.category-pill,
+.sim-link,
+.back-link,
+.sort-link,
+.quick-link,
+.order-link,
+.chart-data summary,
+.menu-search input,
+#sidebar-note {
+  min-height: 44px;
+}
+
+.btn {
+  min-width: 44px;
+}
+
+.category-pill,
+.sim-link,
+.back-link,
+.sort-link,
+.order-link,
+.chart-data summary {
+  display: inline-flex;
+  align-items: center;
+}
+
+.quick-link {
+  display: flex;
+  align-items: center;
+  color: var(--accent-gold);
+  text-decoration: underline;
+}
+
+.order-link-hint {
+  margin-left: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent-gold);
+}
+
+.stepper-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  min-height: 44px;
+  padding: 0 0.9rem;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(184, 67, 58, 0.4);
+  background: transparent;
+  color: var(--accent-red);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-cancel:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+/* Leaflet's 30px zoom buttons and 14px attribution links. Its stylesheet arrives with the map,
+   after this one, so these carry the map's class to win. */
+.courier-map .leaflet-bar a,
+.courier-map.leaflet-touch .leaflet-bar a {
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+  font-size: 1.3rem;
+}
+
+.courier-map .leaflet-control-attribution a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+/* On a phone the links wrap onto a second row instead of running off the right edge (Orders and
+   Sign in used to be off-screen). Everything stays visible: there's nothing to open or close. */
+@media (max-width: 760px) {
+  .header-top {
+    padding: 0.75rem 1rem 0.5rem;
+  }
+
+  .header-nav {
+    padding: 0.4rem 1rem;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    gap: 0.25rem 0.5rem;
+  }
+}
+
+/* Final: responsive layouts */
+
+/* Cart: items beside the order summary, stacked on narrow screens. */
+.cart-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* Checkout field rows. */
+.form-row {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-row-halves {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.form-row-third {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  margin-bottom: 2rem;
+}
+
+/* Checkout: Back to Cart and Place Order. */
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+/* Home: a section title and its "View all" link; they stack when there isn't room. */
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Dish page: Add to Cart and Quick Checkout share the row, full width each on a phone. */
+.dish-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.dish-actions > * {
+  flex: 1 1 200px;
+  justify-content: center;
+}
+
+@media (max-width: 760px) {
+  .cart-layout,
+  .form-row-halves,
+  .form-row-third {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Place Order first, both buttons full width. */
+  .form-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .form-actions > * {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Menu and dish pages on narrower screens: the dishes first, the sidebar below them. */
+@media (max-width: 868px) {
+  .menu-sidebar {
+    order: 2;
+    position: static;
+  }
 }

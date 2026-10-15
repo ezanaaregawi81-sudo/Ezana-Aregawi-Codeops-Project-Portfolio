@@ -15,7 +15,9 @@ const MAX_AGE = 60 * 60 * 8; // 8 hours, in seconds: a working day, then sign in
 function getSecret() {
   const secret = process.env.SESSION_SECRET;
   if (!secret || secret.length < 32) {
-    throw new Error('SESSION_SECRET must be set in .env.local (at least 32 characters).');
+    throw new Error(
+      'SESSION_SECRET is missing or shorter than 32 characters. Locally: .env.local. On Vercel: Settings → Environment Variables, one value for Production and another for Preview.',
+    );
   }
   return secret;
 }

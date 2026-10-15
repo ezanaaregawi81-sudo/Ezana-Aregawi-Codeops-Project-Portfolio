@@ -38,8 +38,8 @@ Every component under `app/`, which side it renders on, and why.
 | `app/checkout/CheckoutForm.jsx` | Needs `useActionState` (pending flag + returned field errors), the cart from `localStorage`, and payment-method selection state. Submits through the `placeOrder` server action — there is no `fetch`. |
 | `app/menu/MenuExplorer.jsx` | Search box and paged dish list. Needs `useState` (typed text), `useSearchParams` (page and category), a debounce hook and SWR, all of which run only in the browser. |
 | `app/menu/DishList.jsx` | Has no `"use client"` of its own, but `MenuExplorer` now renders it, so it ships in the client bundle. That's what lets pages and search results swap without a server round trip. |
-| `app/orders/[id]/LiveOrder.jsx` | Polls the order through `useTrackedOrder()` and re-renders the progress steps as the status moves. |
-| `app/orders/[id]/OrderStatusPill.jsx` | Reads the same `useTrackedOrder()` key for the heading badge. It shares the cache entry, so there's no extra request. |
+| `app/orders/[id]/LiveOrder.jsx` | Keeps the live order in `useState`, opens an `EventSource` in `useEffect` and closes it on unmount. It draws the status pill, the connection badge and the words beside the map. (Mini-project 19 replaced the SWR poll; the separate `OrderStatusPill` is folded in.) |
+| `app/orders/[id]/CourierMap.jsx` | Leaflet needs `window`. Loaded with `next/dynamic` and `ssr: false`, so it never runs on the server. |
 | `app/AuthNav.jsx` | The header's account links. Fetches `/api/session` with SWR so the root layout doesn't read cookies (which would make every page dynamic). Showing the Kitchen link only to staff is cosmetic. |
 | `app/sign-in/SignInForm.jsx` | Needs `useActionState` for the pending label and the "wrong email or password" error. |
 | `app/orders/CancelOrderButton.jsx` | Needs `useActionState` for its pending label and error message. Hiding or showing it is cosmetic: `cancelOrder` does the real session + ownership check on the server. |

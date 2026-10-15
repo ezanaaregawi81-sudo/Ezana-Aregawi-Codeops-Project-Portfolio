@@ -1,18 +1,4 @@
-# Data: every query, where it runs, and why it refreshes the way it does
-
-Server components read the data for every first paint. SWR picks up in the browser only where data has to stay fresh or follow the user's typing.
-
-## Server reads
-
-| Read | Used by | Runs | Scoped by |
-|---|---|---|---|
-| `getAllDishes()` / `getDishById(id)` | `/`, `/menu/[id]`, `generateMetadata`, both `opengraph-image` files, `sitemap.js` | At build time (static / SSG) | Public data |
-| `getDishPage(category, page)` | `/menu`, which then seeds `useDishPage` (below) | Per request, cached by ISR for 60s | Public data |
-| `getOrdersByOwner(session.id)` | `/orders` | Every request | The id inside the **verified cookie**, never a URL or form value |
-| `getOrderById(id)` + `ownerId === session.id` | `/orders/[id]` (seeds `useTrackedOrder`), `GET /api/orders/[id]`, `cancelOrder` | Every request | Ownership. Someone else's order answers exactly like a missing one. |
-| `getAllOrders()` | `/kitchen` | Every request | Staff role, checked on the server |
-
-## Client queries (SWR)
+# Live data: every query and why it refreshes the way it does
 
 Where things live:
 
@@ -24,10 +10,9 @@ Where things live:
 
 | Hook | Key | Refresh rule | Reasoning (one line) |
 |---|---|---|---|
-| `useTrackedOrder(id, initialOrder)` | `/api/orders/<id>` | `fallbackData` from the server; `refreshInterval` **5000ms** until the status is `delivered` or `cancelled`, then **0**; default `dedupingInterval` (2s); revalidates on focus | The status changes by itself within seconds, so poll every 5s for as long as it can still change, and stop once it can't. |
+| ~~`useTrackedOrder(id, initialOrder)`~~ *removed in mini-project 19; the tracker uses a Server-Sent Events stream now (TRACKING.md)* | `/api/orders/<id>` | `fallbackData` from the server; `refreshInterval` **5000ms** until the status is `delivered` or `cancelled`, then **0**; default `dedupingInterval` (2s); revalidates on focus | The status changes by itself within seconds, so poll every 5s for as long as it can still change, and stop once it can't. |
 | `useDishPage(category, page)` | `/api/menu?category=<c>&page=<n>` (no `category` for All) | No polling; `dedupingInterval` **60s**; `revalidateOnFocus: false`; `keepPreviousData: true`; keyed `fallback` from the server for the first page shown | The menu only changes on deploy or after the page's 60s `revalidate`, so any page fetched in the last minute is still correct. |
 | `useDishSearch(query)` | `/api/dishes/search?q=<query>`, or **`null`** when the debounced query is empty | No polling; `dedupingInterval` **60s**; `revalidateOnFocus: false`; `keepPreviousData: true` | Same menu data, so the same 60s window. A null key means an empty box sends nothing. |
-| `useSWR('/api/session')` in `app/AuthNav.jsx` | `/api/session` | SWR defaults, plus `mutate()` after every route change | It drives the header's Sign In / My Orders / Kitchen / Sign Out links without the root layout reading cookies, which would make every page, static ones included, render per request. Sign-in and sign-out end in redirects, so it re-checks on each navigation. It's for display only: real checks happen on the server (AUTH.md). |
 
 **`staleTime`** is what TanStack Query calls it. In SWR it's `dedupingInterval`: how long a key's last answer is reused before another request is allowed.
 

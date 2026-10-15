@@ -25,7 +25,8 @@ export async function POST(request) {
     });
   }
 
-  const order = createOrder({ ownerId: session.id, ...result.data });
+  // Optional Idempotency-Key header: retrying with the same key returns the same order.
+  const order = createOrder({ ownerId: session.id, ...result.data, requestId: request.headers.get('idempotency-key') });
   revalidatePath('/orders');
 
   return Response.json(toCustomerOrder(order), { status: 201 });

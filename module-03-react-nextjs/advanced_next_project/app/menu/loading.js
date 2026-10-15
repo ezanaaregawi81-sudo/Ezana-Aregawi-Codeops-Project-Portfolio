@@ -3,7 +3,7 @@ export default function MenuLoading() {
     <div style={{ animation: 'fadeIn 0.3s ease-in' }}>
       <div style={{ marginBottom: '2rem' }}>
         <div className="skeleton" style={{ height: '36px', width: '220px', marginBottom: '0.75rem' }}></div>
-        <div className="skeleton" style={{ height: '20px', width: '400px' }}></div>
+        <div className="skeleton" style={{ height: '20px', width: '400px', maxWidth: '100%' }}></div>
       </div>
 
       {/* Skeleton Category Bar */}

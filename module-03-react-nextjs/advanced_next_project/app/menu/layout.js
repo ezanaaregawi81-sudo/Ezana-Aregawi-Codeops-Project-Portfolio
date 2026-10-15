@@ -45,9 +45,10 @@ export default function MenuLayout({ children }) {
         <SidebarWidget />
       </aside>
 
-      <main className="menu-main-content">
+      {/* A <div>: the root layout already has the page's one <main>. */}
+      <div className="menu-main-content">
         {children}
-      </main>
+      </div>
     </div>
   );
 }

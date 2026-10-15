@@ -1,19 +1,19 @@
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
-import { getOrderById, toCustomerOrder } from '@/lib/orders';
+import { toTrackedOrder } from '@/lib/courier';
+import { getOrderById } from '@/lib/orders';
 import { getSession } from '@/lib/session';
 import { NO_INDEX } from '@/lib/site';
 import LiveOrder from './LiveOrder';
-import OrderStatusPill from './OrderStatusPill';
 
 export const metadata = {
   title: 'Track your order',
-  description: 'Follow your Addis Eats order from the kitchen to your door. The status refreshes on its own every few seconds.',
+  description: 'Follow your Addis Eats order from the kitchen to your door, on a map and in words, with live updates.',
   robots: NO_INDEX,
 };
 
-// Rendered on the server, so the current status is already in the HTML. Both client
-// components start from it (fallbackData) and then share one polled SWR key.
+// Rendered on the server, so the step, the courier sentence and the map's placeholder are all in
+// the first HTML. LiveOrder starts from that snapshot and then follows /api/orders/:id/events.
 export default async function TrackOrderPage({ params }) {
   const { id } = await params;
 
@@ -27,23 +27,15 @@ export default async function TrackOrderPage({ params }) {
     notFound();
   }
 
-  const initialOrder = toCustomerOrder(order);
-
   return (
-    <div style={{ maxWidth: '720px', margin: '0 auto' }}>
+    <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
       <Link href="/orders" className="btn btn-secondary" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
         &larr; My Orders
       </Link>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', margin: '1.25rem 0 0.25rem' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: '800' }}>Tracking {initialOrder.id}</h1>
-        <OrderStatusPill orderId={initialOrder.id} initialOrder={initialOrder} />
-      </div>
-      <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-        This page checks for updates every few seconds. No need to refresh.
-      </p>
+      <h1 style={{ fontSize: '2rem', fontWeight: '800', margin: '1.25rem 0 1.25rem' }}>Tracking {order.id}</h1>
 
-      <LiveOrder orderId={initialOrder.id} initialOrder={initialOrder} />
+      <LiveOrder initialOrder={toTrackedOrder(order)} />
     </div>
   );
 }

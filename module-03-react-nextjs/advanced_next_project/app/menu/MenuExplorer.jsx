@@ -50,9 +50,20 @@ function Explorer() {
           placeholder="Search the whole menu, e.g. wat or ክትፎ"
           value={text}
           onChange={(event) => setText(event.target.value)}
+          onKeyDown={(event) => {
+            // Esc empties the box and brings the paged dishes back; focus stays in the box.
+            if (event.key === 'Escape' && text) {
+              event.preventDefault();
+              setText('');
+            }
+          }}
+          aria-describedby="menu-search-hint"
           autoComplete="off"
         />
       </div>
+      <p id="menu-search-hint" className="search-hint">
+        Results update as you type · Esc clears
+      </p>
 
       {/* Decide from the query, not from data: keepPreviousData keeps returning old
           search results even after the key goes null. */}

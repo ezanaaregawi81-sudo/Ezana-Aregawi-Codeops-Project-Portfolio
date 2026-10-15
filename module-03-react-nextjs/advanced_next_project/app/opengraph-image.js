@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { ImageResponse } from 'next/og';
 
 // The link preview for every page that doesn't make its own: 1200×630, rendered once at build
@@ -6,18 +8,15 @@ export const alt = 'Addis Eats: a shared injera platter of wats, greens and ayib
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
-// The home page's hero (Wikimedia Commons, Shiefrallo, CC BY-SA 4.0), as Wikimedia's 1280px
-// thumbnail rather than the 3 MB original. The credit is printed on the card.
-const PHOTO =
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Injera%2C_Ethiopian%27s_traditional_food.JPG/1280px-Injera%2C_Ethiopian%27s_traditional_food.JPG';
-
+// The home page's hero (Wikimedia Commons, Shiefrallo, CC BY-SA 4.0); the credit is printed on the card.
+// Read from a 1280px copy in public/images (like the dish cards), not fetched from Wikimedia at
+// build time, where a 429 would quietly produce a card without its photo.
 async function loadPhoto() {
   try {
-    const res = await fetch(PHOTO, { headers: { 'User-Agent': 'AddisEats/1.0 (link preview)' } });
-    if (!res.ok) return null;
-    return `data:image/jpeg;base64,${Buffer.from(await res.arrayBuffer()).toString('base64')}`;
+    const file = await readFile(join(process.cwd(), 'public', 'images', 'hero-platter-1280.jpg'));
+    return `data:image/jpeg;base64,${file.toString('base64')}`;
   } catch {
-    return null; // the card still renders, just without the photo
+    return null; // still produce a card, just without the photo
   }
 }
 

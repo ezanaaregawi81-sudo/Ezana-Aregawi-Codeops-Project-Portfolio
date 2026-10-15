@@ -1,7 +1,9 @@
+import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { getAllOrders, toCustomerOrder } from '@/lib/orders';
 import { getSession } from '@/lib/session';
 import { NO_INDEX } from '@/lib/site';
+import { etb, relative, when } from '@/lib/format';
 
 export const metadata = {
   title: 'Kitchen order board',
@@ -18,14 +20,18 @@ export default async function KitchenPage() {
   // A customer gets the same 404 as a page that doesn't exist, so the route isn't advertised.
   if (session.role !== 'staff') notFound();
 
+  const now = Date.now();
   const orders = getAllOrders().map(toCustomerOrder);
 
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto' }}>
       <h1 style={{ fontSize: '2.2rem', fontWeight: '800', marginBottom: '0.25rem' }}>Kitchen Order Board</h1>
-      <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
+      <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>
         Every order, newest first. Signed in as {session.name} (staff).
       </p>
+      <Link href="/kitchen/dashboard" className="btn btn-secondary" style={{ marginBottom: '2rem' }} id="kitchen-dashboard-link">
+        📊 Dashboard: last 14 days
+      </Link>
 
       {orders.length === 0 ? (
         <div className="state-container">
@@ -49,13 +55,13 @@ export default async function KitchenPage() {
                   {order.items.map((item) => `${item.name} × ${item.qty}`).join(', ')}
                 </div>
                 <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.35rem' }}>
-                  {order.customer.name} · {order.customer.phone} · {order.customer.address}
+                  {order.customer.name} · {order.customer.phone} · {order.customer.area}, {order.customer.address}
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--accent-gold)' }}>{order.total} ETB</div>
+                <div style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--accent-gold)' }}>{etb(order.total)}</div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.35rem' }}>
-                  {new Date(order.placedAt).toLocaleTimeString()} · {order.paymentMethod}
+                  <time dateTime={order.placedAt}>{when(order.placedAt, 'time')}</time>, {relative(order.placedAt, now)} · {order.paymentMethod}
                 </div>
               </div>
             </div>

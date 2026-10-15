@@ -56,8 +56,22 @@ Those numbers are bytes and requests, which don't depend on CPU speed, so they s
 | Every `<img>` → `next/image` with real `width`/`height` and `sizes` | Home page weight **3,986 KB → 339 KB**. The 3.0 MB hero arrives on a phone as a 42 KB WebP, and each dish thumbnail goes from ~275 KB to 3.6 KB. |
 | Google Fonts `@import` → `next/font` (Inter and Fraunces) | No requests to Google. CLS stays 0, because the preloaded fonts have size-matched fallbacks. |
 | Blocking third-party `<script>` → `next/script lazyOnload` | Off the critical path. A slow CDN can't hold back first paint. |
-| Remote image host pinned in `remotePatterns` | Unlisted hosts and other folders get 400, so `/_next/image` isn't an open proxy |
+| Remote image host pinned in `remotePatterns` (until the final version, which serves every image from `public/` and has no `remotePatterns` at all) | Unlisted hosts and other folders get 400, so `/_next/image` isn't an open proxy |
 
 ## Bundle check
 
 Every file in `.next/static` was searched after the final build. None contains the `SESSION_SECRET` value, demo passwords, password hashes, `scryptSync`, `createHmac` or `ownerId`, and no variable uses `NEXT_PUBLIC_`.
+
+## The final version
+
+The final app merges the staff dashboard, live tracking and the keyboard/touch work (mini-projects 18–20) on top of the measured build above, keeping both of its fixes: Fraunces without the `opsz` axis, and the first dish photo loading eagerly.
+
+**One more fix, found while checking the final build: no more hotlinked hero.**
+- The home hero came from `upload.wikimedia.org` through the image optimizer, and Wikimedia answered most of the optimizer's size requests with **429 Too Many Requests**. Depending on screen width, the hero could simply not appear.
+- It's now `public/images/hero-platter.jpg`: a 2400px, 530 KB copy of the same CC BY-SA 4.0 photo, credited as before, that next/image resizes and converts per screen.
+- The site link-preview card reads a 1280px copy from disk, like the dish cards, instead of fetching Wikimedia at build time.
+- `next.config.mjs` no longer has `remotePatterns`, so `/_next/image` refuses every remote URL.
+
+**Layout shift:** CLS stays **0** on the public pages, and the tracking map's placeholder and map are both 340px tall (CLS 0.0002 on that page).
+
+**Lighthouse wasn't re-measured for the final version.** The laptop was under heavy background load at the time, and in Tomas's copy of this app the same conditions dragged an *unchanged* page from about 92 down to 62. Numbers taken then would describe the machine, not the app. The fair measurement is PageSpeed Insights on the deployed URL (it runs on Google's servers), or a local run with nothing else open and the laptop plugged in.

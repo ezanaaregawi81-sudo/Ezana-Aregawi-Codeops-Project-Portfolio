@@ -10,6 +10,11 @@ export const PAYMENT_METHODS = [
   { id: 'cash', name: 'Cash on Delivery 💵' },
 ];
 
+// The neighbourhoods Addis Eats delivers to. The checkout offers exactly these, the server only
+// accepts these, and the dashboard groups revenue by them, so a chart never has to guess whether
+// "bole atlas" and "Bole" are the same place.
+export const NEIGHBOURHOODS = ['Bole', 'Kazanchis', 'Piassa', 'Megenagna', 'Sarbet', 'CMC'];
+
 // Ethiopian mobile number: 09XXXXXXXX or +2519XXXXXXXX (spaces and dashes ignored).
 const PHONE_PATTERN = /^(?:\+251|0)9\d{8}$/;
 
@@ -23,6 +28,7 @@ export function validateOrder(input) {
 
   const name = text(body.name);
   const phone = text(body.phone).replace(/[\s-]/g, '');
+  const area = text(body.area);
   const address = text(body.address);
   const paymentMethod = text(body.paymentMethod);
 
@@ -36,6 +42,10 @@ export function validateOrder(input) {
     fieldErrors.phone = 'Phone is required.';
   } else if (!PHONE_PATTERN.test(phone)) {
     fieldErrors.phone = 'Enter an Ethiopian mobile number, e.g. 0911234567 or +251911234567.';
+  }
+
+  if (!NEIGHBOURHOODS.includes(area)) {
+    fieldErrors.area = 'Choose your neighbourhood.';
   }
 
   if (!address) {
@@ -72,5 +82,5 @@ export function validateOrder(input) {
     return { success: false, fieldErrors };
   }
 
-  return { success: true, data: { name, phone, address, paymentMethod, items } };
+  return { success: true, data: { name, phone, area, address, paymentMethod, items } };
 }

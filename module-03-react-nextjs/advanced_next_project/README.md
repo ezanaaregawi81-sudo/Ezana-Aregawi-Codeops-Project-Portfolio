@@ -1,253 +1,85 @@
 # Addis Eats
 
-An Ethiopian food-ordering app built on the Next.js 16 App Router, and the last checkpoint before the capstone. It pulls together mini-projects 13–17 and finishes what was still open.
+An Ethiopian food-ordering app built with the Next.js 16 App Router. This is the finished version: the work of mini-projects 13–20 and days 38–44 in one app, built from that code and ready for Vercel.
 
-| Area | Highlights | Details |
+## 🔗 Live URL
+
+**Not deployed yet.** Deploying needs the project owner's Vercel account (steps below). Paste the production URL here once it's live:
+
+> https://… .vercel.app
+
+## Features
+
+**For customers**
+- 🍲 **Menu:** browse by category with paging, or search every dish as you type (Esc clears the box).
+- 📄 **Dish pages:** photo, ingredients, spice level and price in ETB, with Add to Cart.
+- 🛒 **Cart and checkout:** quantities, subtotal + 100 ETB delivery + 15% VAT, a neighbourhood and address, and payment by Telebirr, CBE Birr or cash on delivery.
+- 🧾 **My Orders:** every order with its status, cancel until the kitchen starts, and **Download history (CSV)**.
+- 🛵 **Live tracking:** a map of the courier and your drop-off, "Where's my food?" in words beside it, and a status that streams in from the server (Server-Sent Events) until it's delivered.
+
+**For kitchen staff**
+- 📋 **Kitchen Order Board:** every order, newest first.
+- 📊 **Dashboard:** revenue by neighbourhood and orders per day over 14 days, each with its figures as a table, plus a sortable, paged order table.
+
+**Demo accounts:** `abebe@example.com` / `injera123`, `tirunesh@example.com` / `injera123`, `kitchen@addiseats.et` / `kitchen123` (staff).
+
+## How it's built
+
+| Area | Highlights | Read more |
 |---|---|---|
-| Authentication and authorisation | Sign-in and sign-out, an HMAC-signed `httpOnly` / `secure` / `sameSite` session cookie, three checks on every private route (proxy, page, action/handler), queries scoped to the verified session id, a staff-only kitchen, and four attacks tried from the browser console | [AUTH.md](./AUTH.md) |
-| Data fetching and live data | Order status rendered on the server and then polled every 5 s until it's final, a debounced menu search, and server-seeded SWR so the first paint has no spinner | [DATA.md](./DATA.md) |
-| Performance | `next/image`, `next/font`, `next/script`, a lazy-LCP fix and a smaller heading font. Lighthouse 92 on home and dish pages, 89 on the menu. | [PERF.md](./PERF.md) |
-| Metadata and SEO | Its own title and description on every route, 1200×630 Open Graph cards for the site and each dish, MenuItem JSON-LD, `sitemap.xml`, `robots.txt` and canonical URLs | [SEO.md](./SEO.md) |
+| Authentication | Signed `httpOnly` / `secure` / `sameSite` session cookie, proxy → page → action checks on every private route, data scoped to the verified account, staff-only kitchen, console attacks tested, one order per double tap | [AUTH.md](./AUTH.md) |
+| Data | Server rendering seeded into SWR, debounced search, paging in the URL, a live order feed over SSE | [DATA.md](./DATA.md), [TRACKING.md](./TRACKING.md) |
+| Performance | `next/image`, `next/font`, `next/script`, every image served from `public/`, budgets and measurements | [PERF.md](./PERF.md) |
+| SEO | Per-route titles and descriptions, link-preview cards, MenuItem JSON-LD, sitemap, robots, canonical URLs | [SEO.md](./SEO.md) |
+| Reports | Server-side aggregation, readable charts, accessible tables | [DASHBOARD.md](./DASHBOARD.md) |
+| Accessibility and shipping | Keyboard-only use, visible focus, 44px targets, no double submits, pre-flight checklist, Vercel variables per environment, post-deploy checks, rollback | [HARDEN-AND-SHIP.md](./HARDEN-AND-SHIP.md) |
+| Components | What runs on the server and what in the browser | [BOUNDARY.md](./BOUNDARY.md) |
 
-Demo accounts: `abebe@example.com` / `injera123`, `tirunesh@example.com` / `injera123`, `kitchen@addiseats.et` / `kitchen123` (staff).
+## Checked on the final build (production build, Chrome)
 
-## Running it
+- **Responsive:** 11 pages at 360, 390, 768, 1024 and 1440px wide (55 combinations): no sideways scrolling, nothing cut off at the edge.
+  - **Header:** on a phone it wraps onto two rows.
+  - **Narrow screens:** cart, checkout fields and dish buttons stack; the menu comes before the sidebar; on checkout, Place Order comes first.
+- **Keyboard only:**
+  - A whole order with Tab, Enter and typing.
+  - A focus ring on all 155 Tab stops; no control under 44 × 44px; nothing reachable only by mouse.
+- **Double tap on Place Order:** **one** order, whether by double Enter, two simultaneous clicks or a touch double tap.
+- **Live tracking:**
+  - Order placed → in the kitchen → on the way → delivered, over the live feed.
+  - Leaving the page five times leaves 0 open connections, and there's no reconnect after delivery.
+- **CSV:** a name with quotes and an address with a comma, quotes and a line break download exactly as typed.
+- **Deploy checks:** `scripts/verify-deploy.mjs` against a local production build passes 20 of 21. The one left is HTTPS, which only the live URL can provide.
+- **Secrets:** none in the 15 JavaScript files a browser downloads.
+- **Build and tests:** `npm run build` has no errors; `npm test` has 9 passing.
+
+## Run locally
 
 ```bash
 npm install
-cp .env.example .env.local   # fill in SESSION_SECRET; the file says how to make one
-npm run build && npm start   # production build at http://localhost:3000
-npm test                     # checks the sign-in redirect validator
+cp .env.example .env.local   # then set SESSION_SECRET (the file shows how to generate one)
+npm run build && npm start   # http://localhost:3000
+npm test
 ```
 
-## Deploying on Vercel
+## Ship it to Vercel
 
-1. Import the GitHub repository at <https://vercel.com/new>. Set **Root Directory** to `module-03-react-nextjs/advanced_next_project` (Next.js is detected).
-2. In **Settings → Environment Variables**, add:
-   - `SESSION_SECRET`: a fresh random value of at least 32 characters. Don't reuse the local one.
-   - `SITE_URL`: the live address, e.g. `https://your-project.vercel.app`. If it's missing, Vercel's production domain is used.
-3. After the deploy, check what only a live site can show:
-   - **Preview card:** a dish link in <https://www.opengraph.xyz> or Facebook's [Sharing Debugger](https://developers.facebook.com/tools/debug/) should show the dish card with its ETB price.
-   - **Absolute URLs:** the page source's `og:image`, canonical link and JSON-LD `url` should all start with the live address.
-   - **Crawler files:** `/sitemap.xml` and `/robots.txt` should load.
+1. **Import the project:** vercel.com → **Add New → Project** → import this repository. Set **Root Directory** to `module-03-react-nextjs/advanced_next_project`. Framework: Next.js; keep the default commands.
+2. **Settings → Environment Variables,** one environment at a time:
 
-**On Vercel, mind the in-memory storage.** Orders and signed-out sessions live in server memory, a deliberate choice for this project. Vercel may run requests on different serverless instances with separate memory, so an order may not appear on the next request, and a sign-out may not reach every instance. On a single `npm start` process it's all reliable. Postgres or Redis would fix it (AUTH.md).
+| | Production | Preview | Development |
+|---|---|---|---|
+| `SESSION_SECRET` | a fresh random value (32+ characters) | a **different** fresh value | your `.env.local` only |
+| `SITE_URL` | only with a custom domain | unset: each preview uses its own URL | unset |
 
----
+   Make each secret with `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"`.
 
-# Making Addis Eats Findable (mini-project 17)
+3. **Deploy.** After changing any variable, redeploy.
+4. **Check it in a private window:**
+   - Run `SESSION_SECRET=<production value> node scripts/verify-deploy.mjs https://<your-app>.vercel.app`.
+   - Then do the manual list in [HARDEN-AND-SHIP.md](./HARDEN-AND-SHIP.md): sign in, order by keyboard with a double Enter, track it to delivered, open the dashboard, and paste a dish URL into a chat to see its card.
+5. **Rolling back:** Deployments → the last good deployment → **⋯ → Promote to Production**, or `vercel rollback`. Variable changes don't roll back with it.
 
-Mini-project 17 builds on mini-project 16:
-
-- `metadataBase` from `SITE_URL`, a `%s · Addis Eats` title template, and a description of its own on every route
-- `generateMetadata` for each dish, built from the dish record
-- a site-wide 1200×630 `opengraph-image`, plus one generated for every dish
-- schema.org `MenuItem` JSON-LD with the same name and ETB price the page shows
-- `app/sitemap.js` built from the dish records, with signed-in routes left out (and disallowed in `app/robots.js`)
-- canonical URLs on `/menu`, `/sign-in` and `/cart`, the routes that accept query parameters
-
-What the page source shows for each route, and the "Check yourself" answers, are in **[SEO.md](./SEO.md)**. Set `SITE_URL` (see `.env.example`) before deploying.
-
----
-
-# Making Addis Eats Fast (mini-project 16)
-
-Mini-project 16 builds on mini-project 15:
-
-- every image through `next/image`, with real `width`/`height`, a `sizes` that matches the layout, and alt text that describes the food
-- `preload` (Next 16's replacement for `priority`) on exactly one image, with the one remote image host pinned in `next.config.mjs`
-- the Google Fonts `@import` replaced by `next/font` (Inter and Fraunces)
-- the third-party confetti script loaded with `next/script` and `lazyOnload`
-- a committed `.env.example` that explains every variable, and a scan showing no secret reaches the browser bundle
-
-What changed, what it did and what is still unmeasured is in **[PERF.md](./PERF.md)**.
-
-## Setup for a fresh clone
-
-```bash
-npm install
-cp .env.example .env.local   # then set SESSION_SECRET; the file says how to generate one
-npm run build && npm start   # measure this, never `npm run dev`
-```
-
-`SESSION_SECRET` is the only variable, and it is server-only.
-
----
-
-# Securing Addis Eats (mini-project 15)
-
-Mini-project 15 builds on mini-project 14. It adds:
-
-- sign-in and sign-out
-- a signed, `httpOnly` / `secure` / `sameSite` session cookie, with one `getSession()` helper
-- `proxy.js` guarding `/checkout`, `/orders` and `/kitchen`, and remembering where you were going in `next`
-- ownership checks inside every action that writes
-- a staff-only `/kitchen` order board
-
-`/orders` is now **My Orders**, scoped to the signed-in account. The old public kitchen board moved to `/kitchen`.
-
-Every protected route, its layers, what each layer proves, and the three attacks run against the app are in **[AUTH.md](./AUTH.md)**.
-
-Sign in with `abebe@example.com` / `injera123`, `tirunesh@example.com` / `injera123`, or `kitchen@addiseats.et` / `kitchen123` (staff). `npm test` checks the `next` validator against crafted links.
-
-> Next 16 renamed `middleware.js` to `proxy.js` (same API, Node runtime), so the "middleware" in the brief is `proxy.js` here.
-
----
-
-# Live Data in Addis Eats (mini-project 14)
-
-Mini-project 14 keeps the API and server actions from mini-project 13 and adds three client-side data features, built with [SWR](https://swr.vercel.app):
-
-- **`/orders/[id]`**: an order tracker that is rendered on the server, then polls every 5 seconds.
-- **`/menu` search**: debounced, and it never shows results for a query you've already typed past.
-- **`/menu` paging**: a paged dish list that doesn't flash, with the page number in the URL.
-
-Every query, its key, its refresh rule and the reasoning are in **[DATA.md](./DATA.md)**.
-
-## What the network tab shows while typing
-
-Open DevTools → Network → `Fetch/XHR` on `/menu` and type `kitfo` into the search box at normal speed:
-
-- **One** `api/dishes/search?q=kitfo`, about 350ms after the last key. The SWR key comes from the debounced value, so the in-between keystrokes never become requests.
-- Type slowly, pausing after each letter, and every pause sends a request. The route answers after a random 250–1100ms, so they often **finish out of order**. The list still only shows matches for what's in the box, and the caption is taken from the response.
-- Delete everything and **nothing** is sent. An empty query is a `null` key, and the paged list comes back from the cache.
-- Search for something you searched in the last minute and nothing is sent. It's answered from the cache (`dedupingInterval` 60s).
-- Click **Next →** and there's one `api/menu?page=2`, and **no** `menu?_rsc=…` request (paging uses `history.pushState`). The current dishes stay, faded, until page 2 lands. Click **← Prev** and page 1 is back instantly from the cache.
-
-On `/orders/<id>` (via **Track My Order** after checkout, or an order id on the board):
-
-- **Nothing** on load, because the server already sent the order as `fallbackData`. Then one `api/orders/<id>` every 5s. That's one even though two components, the heading pill and the tracker, read that key.
-- The requests stop once the order reaches **Delivered** (about 100s after ordering) or is cancelled.
-
-## Check yourself
-
-- **Does typing five characters fire one request or five?** One.
-- **Does the order page show data immediately, with no spinner?** Yes. The status is in the server HTML, and SWR starts from it.
-- **Do two components asking for the same key produce one network call?** Yes. `OrderStatusPill` and `LiveOrder` both use `useTrackedOrder(id)`, and there is one request per poll.
-- **Does the list keep previous results visible while the next load runs?** Yes. `keepPreviousData` is on for paging and search, and the old list fades instead of disappearing.
-- **Can you justify every `refreshInterval` and `staleTime` in one sentence?** Yes, see the table in [DATA.md](./DATA.md). In SWR, `staleTime` is `dedupingInterval`.
-
-## Running locally
-
-```bash
-npm install
-cp .env.example .env.local   # then put a real value in SESSION_SECRET
-npm run dev
-```
-
-Generate a secret with:
-
-```bash
-node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"
-```
-
-## Error shape
-
-Every error — from a route handler or a server action — has the same shape:
-
-```json
-{ "error": { "code": "VALIDATION_FAILED", "message": "Please correct the highlighted fields.", "fieldErrors": { "phone": "..." } } }
-```
-
-`fieldErrors` is only present on validation failures.
-
-## Route handlers
-
-| Endpoint | Method | Status codes |
-|---|---|---|
-| `/api/dishes` | `GET` | **200** — array of every dish |
-| `/api/dishes/[id]` | `GET` | **200** — the dish · **404** `NOT_FOUND` — unknown id (never an empty 200) |
-| `/api/menu?category=&page=` | `GET` | **200** — `{ category, dishes, page, pageCount, dishCount }`, 4 per page, pages past the end clamped |
-| `/api/dishes/search?q=` | `GET` | **200** — `{ query, dishes, matchCount }`, random 250–1100ms delay on purpose |
-| `/api/orders/[id]` | `GET` | **200** — your order · **401** `UNAUTHORIZED` — no valid session · **404** `NOT_FOUND` — missing or not yours |
-| `/api/orders` | `POST` | **201** — the created order · **401** `UNAUTHORIZED` — not signed in · **400** `BAD_REQUEST` — body isn't JSON · **422** `VALIDATION_FAILED` — with `fieldErrors` |
-
-Any other method on these paths gets Next's **405 Method Not Allowed**.
-
-### `POST /api/orders` body
-
-```json
-{
-  "name": "Abebe Bikila",
-  "phone": "0911234567",
-  "address": "Bole Atlas, near Medhanealem Church",
-  "paymentMethod": "telebirr",
-  "items": [{ "id": "kitfo", "qty": 2 }]
-}
-```
-
-- `phone`: Ethiopian mobile, `09XXXXXXXX` or `+2519XXXXXXXX` (spaces/dashes ignored)
-- `paymentMethod`: `telebirr` · `cbe` · `cash`
-- `items`: dish ids from the menu, `qty` 1–20. Names and prices are taken from the
-  server's menu; any `price` the client sends is ignored. Totals use the same
-  delivery fee (100 ETB) and VAT (15%) as the cart page.
-
-### Try it with curl
-
-The order endpoints need a signed-in `ae_session` cookie now (copy it from DevTools → Application → Cookies and add `-b "ae_session=…"`). Without it they return `401`.
-
-```bash
-curl -i localhost:3000/api/dishes
-curl -i localhost:3000/api/dishes/kitfo
-curl -i localhost:3000/api/dishes/burger          # 404
-
-# 422 with named field errors
-curl -i -X POST localhost:3000/api/orders -H "Content-Type: application/json" \
-  -d '{"name":"Abebe","phone":"12345","address":"Bole Atlas","paymentMethod":"cash","items":[{"id":"kitfo","qty":1}]}'
-
-# 201
-curl -i -X POST localhost:3000/api/orders -H "Content-Type: application/json" \
-  -d '{"name":"Abebe","phone":"0911234567","address":"Bole Atlas","paymentMethod":"cash","items":[{"id":"kitfo","qty":1}]}'
-```
-
-## Server actions (`app/orders/actions.js`)
-
-Server actions are POST endpoints too, but can't set an HTTP status, so each returns a
-`status` field with the same meaning, and the UI branches on it.
-
-| Action | Used by | `status` values |
-|---|---|---|
-| `placeOrder(prevState, formData)` | Checkout form via `useActionState` | **201** created · **422** with `fieldErrors` (and the submitted `values`, so the form refills) |
-| `cancelOrder(prevState, formData)` | "Cancel order" button on `/orders` via `useActionState` | **200** cancelled · **401** no valid session · **403** not your order · **404** unknown order · **409** already cancelled, or already being prepared (`TOO_LATE`) |
-
-Both call `revalidatePath('/orders')` after a successful write (so does `POST /api/orders`).
-
-## How the pieces fit
-
-| File | Role |
-|---|---|
-| `lib/order-schema.js` | **The one schema.** `validateOrder()` is used by `POST /api/orders` and `placeOrder`; `PAYMENT_METHODS` is used by the form. |
-| `lib/api-errors.js` | Builds the shared error shape. |
-| `lib/pricing.js` | Subtotal / delivery / VAT, shared by the cart page and the order store. |
-| `lib/orders.js` | In-memory order store (`server-only`). Lost on restart. Orders step through `placed → in-kitchen → on-the-way → delivered` on a timer (20s / 50s / 100s). |
-| `lib/fetcher.js` | The shared SWR fetcher; throws on non-OK responses. |
-| `lib/swr-keys.js` | Builds every SWR key, for both the server's fallback and the client's hooks. |
-| `lib/data-hooks.js` | Every client query and its refresh rules (`useTrackedOrder`, `useDishPage`, `useDishSearch`). |
-| `lib/session.js` | The one session helper: signs, verifies, sets and revokes the `ae_session` cookie (`server-only`). The only place `SESSION_SECRET` is read. |
-| `app/checkout/CheckoutForm.jsx` | `<form action={formAction}>` — no `fetch`, `pending` from `useActionState` drives the button. |
-| `app/orders/page.js` | My Orders: dynamic, lists only `getOrdersByOwner(session.id)`. |
-| `app/kitchen/page.js` | Staff-only order board (every order, with contact details). Role checked on the server. |
-
-## Check yourself
-
-- **Invalid phone with `curl -X POST` →** `422` with `fieldErrors.phone`.
-- **Valid order →** `201`. **Unknown dish id →** `GET /api/dishes/burger` is `404 NOT_FOUND`, not an empty `200`
-  (and an order containing `burger` is a `422` with `fieldErrors.items`).
-- **Field errors after switching to the server action?** Yes — `placeOrder` returns
-  `fieldErrors` plus the submitted `values`; the form shows the errors under each field
-  and refills the inputs.
-- **New order on the cached orders page?** `/orders` is prerendered and served with
-  `x-nextjs-cache: HIT`. `revalidatePath('/orders')` after each write marks it stale,
-  so the next request re-renders and the new order (or cancellation) shows immediately.
-- **`cancelOrder` with someone else's id from the console?** The action re-checks
-  everything on the server, regardless of which buttons the UI showed:
-  - no cookie, or a hand-edited cookie (the HMAC signature fails) → `401 UNAUTHORIZED`
-  - a valid session that isn't the order's owner → `403 FORBIDDEN`, nothing is written
-  - the owner → `200`, then `409 ALREADY_CANCELLED` on a repeat
-- **Any secret in the browser's JavaScript?** No. `SESSION_SECRET` lives only in
-  `.env.local` (git-ignored), has no `NEXT_PUBLIC_` prefix, and is read only in
-  `lib/session.js`, which imports `server-only` (importing it from a client component
-  is a build error). Grepping `.next/static` for the secret's value finds nothing. The
-  session cookie is `httpOnly`, so page scripts can't read it either.
-
-See [BOUNDARY.md](./BOUNDARY.md) for the server/client component map.
+**Known limit.** Orders, `requestId`s and signed-out sessions live in server memory, by design for the course.
+- Vercel may answer requests from different serverless instances, each with its own memory.
+- So on the live site an order can vanish between requests, or its tracking page can 404.
+- A single `npm start` process is fully reliable. A shared database (Postgres or Redis) is the real fix.

@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getAllDishes } from '@/lib/dishes';
 import { DISH_CARD_SIZES, DISH_PHOTO, dishPhotoAlt, dishPhotoSrc } from '@/lib/dish-photos';
+import { etb } from '@/lib/format';
 import AddToCartButton from './AddToCartButton';
 
 // The home page leads with the brand, so it skips the "%s · Addis Eats" template.
@@ -20,10 +21,13 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="hero">
         <Image
-          src="https://upload.wikimedia.org/wikipedia/commons/9/96/Injera%2C_Ethiopian%27s_traditional_food.JPG"
+          // A 2400px copy of the Wikimedia Commons original, kept in public/images. Hotlinked, the
+          // image optimizer's requests were refused with 429 Too Many Requests (most sizes failed),
+          // which leaves a broken hero on some screens. The credit below stays.
+          src="/images/hero-platter.jpg"
           alt="A shared platter on injera: red and brown wats, lentils, collard greens and crumbled ayib cheese in the centre"
-          width={3264}
-          height={2448}
+          width={2400}
+          height={1800}
           // Full hero width: the 1200px page minus main and hero padding (5rem in total).
           sizes="(max-width: 1200px) calc(100vw - 5rem), 1120px"
           className="hero-image"
@@ -58,7 +62,7 @@ export default function HomePage() {
 
       {/* Featured Dishes Section */}
       <section style={{ marginTop: '3rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+        <div className="section-head">
           <div>
             <h2 style={{ fontSize: '1.8rem', fontWeight: '700' }}>Popular Signature Dishes</h2>
             <p style={{ color: 'var(--text-secondary)' }}>Handpicked favorites from our traditional kitchen</p>
@@ -85,7 +89,7 @@ export default function HomePage() {
                 <p className="dish-desc">{dish.description}</p>
 
                 <div className="dish-footer">
-                  <span className="dish-price">{dish.priceFormatted}</span>
+                  <span className="dish-price">{etb(dish.price)}</span>
                   <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
                     <Link href={`/menu/${dish.id}`} className="btn btn-secondary" style={{ padding: '0.5rem 0.9rem', fontSize: '0.875rem' }} id={`featured-view-${dish.id}`}>
                       View Details

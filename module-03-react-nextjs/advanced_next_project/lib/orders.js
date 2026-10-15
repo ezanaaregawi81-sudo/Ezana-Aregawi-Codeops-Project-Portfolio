@@ -6,9 +6,9 @@ import { computeTotals } from './pricing';
 const store = globalThis.__addisEatsOrders ?? (globalThis.__addisEatsOrders = []);
 
 // No real kitchen yet: an order works its way through these steps by itself,
-// based on how many seconds ago it was placed. That's what the tracker page polls for.
+// based on how many seconds ago it was placed. The tracker page follows it over a live stream.
 export const ORDER_STEPS = ['placed', 'in-kitchen', 'on-the-way', 'delivered'];
-const STEP_ENDS_AT = { placed: 20, 'in-kitchen': 50, 'on-the-way': 100 };
+export const STEP_ENDS_AT = { placed: 20, 'in-kitchen': 50, 'on-the-way': 100 };
 
 function refreshStatus(order) {
   if (!order || order.status === 'cancelled' || order.status === 'delivered') return order;
@@ -17,11 +17,18 @@ function refreshStatus(order) {
   return order;
 }
 
-export function createOrder({ ownerId, name, phone, address, paymentMethod, items }) {
+// requestId → order id, per account: the same requestId again (double submit, retry) returns the
+// order already placed instead of creating a second one.
+const placedRequests = globalThis.__addisEatsRequests ?? (globalThis.__addisEatsRequests = new Map());
+
+export function createOrder({ ownerId, name, phone, area, address, paymentMethod, items, requestId }) {
+  const requestKey = requestId ? `${ownerId}:${String(requestId).slice(0, 100)}` : null;
+  if (requestKey && placedRequests.has(requestKey)) return getOrderById(placedRequests.get(requestKey));
+
   const order = {
     id: `AE-${Date.now().toString(36).toUpperCase()}-${Math.floor(Math.random() * 1000)}`,
     ownerId,
-    customer: { name, phone, address },
+    customer: { name, phone, area, address },
     paymentMethod,
     items,
     ...computeTotals(items),
@@ -29,6 +36,7 @@ export function createOrder({ ownerId, name, phone, address, paymentMethod, item
     placedAt: new Date().toISOString(),
   };
   store.push(order);
+  if (requestKey) placedRequests.set(requestKey, order.id);
   return order;
 }
 
@@ -54,6 +62,13 @@ export function getOrdersByOwner(ownerId) {
 // Every order, newest first. Only the staff-only /kitchen page may call this.
 export function getAllOrders() {
   return store.map(refreshStatus).reverse();
+}
+
+// Adds finished orders from the past (the dashboard's sample history). They keep their own
+// placedAt and a final status, so refreshStatus() leaves them alone.
+export function addHistoricOrders(orders) {
+  store.push(...orders);
+  store.sort((a, b) => Date.parse(a.placedAt) - Date.parse(b.placedAt));
 }
 
 // What the owner (or the kitchen) sees: everything except the owner's account id.

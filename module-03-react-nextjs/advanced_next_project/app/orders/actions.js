@@ -20,6 +20,7 @@ export async function placeOrder(_prevState, formData) {
   const values = {
     name: formData.get('name') ?? '',
     phone: formData.get('phone') ?? '',
+    area: formData.get('area') ?? '',
     address: formData.get('address') ?? '',
     paymentMethod: formData.get('paymentMethod') ?? '',
   };
@@ -43,7 +44,8 @@ export async function placeOrder(_prevState, formData) {
   }
 
   // The owner is whoever the verified cookie says, never a field from the form.
-  const order = createOrder({ ownerId: session.id, ...result.data });
+  // One requestId per checkout visit (CheckoutForm). A repeat returns the order already placed.
+  const order = createOrder({ ownerId: session.id, ...result.data, requestId: formData.get('requestId') || null });
   revalidatePath('/orders');
 
   return { status: 201, order: { id: order.id, total: order.total, name: order.customer.name } };
