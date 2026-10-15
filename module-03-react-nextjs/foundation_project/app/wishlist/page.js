@@ -1,8 +1,10 @@
 import { getDishes } from '@/lib/dishes';
 import DishList from '@/components/DishList';
 import WishlistGrid from './WishlistGrid';
+import { NO_INDEX } from '@/lib/site';
 
-export const metadata = { title: 'Your Wishlist' };
+// One visitor's own page: kept out of search results.
+export const metadata = { title: 'Your Wishlist', robots: NO_INDEX };
 
 // Static page: the server renders every dish card once; WishlistGrid (client) shows
 // only the ones saved in this browser.

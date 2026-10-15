@@ -1120,3 +1120,59 @@ main {
     padding: 2rem 1.25rem;
   }
 }
+
+/* ===== Final: every control at least 44 × 44 CSS px, no text under 12px ===== */
+
+.skip-link,
+.brand,
+.nav a,
+.category-btn,
+.link-back,
+.btn,
+.btn--sm,
+.remove-btn,
+.cart-item__info a,
+.checkout-form input,
+.checkout-form select,
+.checkout-form textarea,
+.toolbar input,
+.toolbar select {
+  min-height: 44px;
+}
+
+.skip-link,
+.brand,
+.nav a,
+.category-btn,
+.link-back,
+.remove-btn,
+.cart-item__info a {
+  display: inline-flex;
+  align-items: center;
+}
+
+.nav a,
+.btn,
+.btn--sm {
+  min-width: 44px;
+  justify-content: center;
+}
+
+/* A dish card's name is the link to its page. */
+.dish-card__title {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.wish-btn,
+.qty-stepper button {
+  width: 44px;
+  height: 44px;
+}
+
+.badge {
+  min-width: 1.4rem;
+  height: 1.4rem;
+  font-size: 0.75rem;
+}

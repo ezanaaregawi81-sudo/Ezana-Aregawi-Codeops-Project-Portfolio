@@ -5,8 +5,11 @@ import { getOrder, ORDER_STEPS } from '@/lib/orders';
 import { formatETB } from '@/lib/pricing';
 import { getSession } from '@/lib/session';
 import OrderStatus from './OrderStatus';
+import { NO_INDEX } from '@/lib/site';
+import SubmitButton from '@/components/SubmitButton';
 
-export const metadata = { title: 'Your order' };
+// One visitor's own page: kept out of search results.
+export const metadata = { title: 'Your order', robots: NO_INDEX };
 
 // Dynamic: reads the session cookie to check the order belongs to this visitor.
 // Someone else's order id gets the same 404 as a made-up one, so ids can't be probed.
@@ -69,9 +72,9 @@ export default async function OrderPage({ params }) {
             // re-checks the session and ownership itself.
             <form action={cancelOrder}>
               <input type="hidden" name="orderId" value={order.id} />
-              <button type="submit" className="btn btn--danger" style={{ marginTop: '1.5rem' }}>
+              <SubmitButton className="btn btn--danger" style={{ marginTop: '1.5rem' }} pendingText="Cancelling…">
                 Cancel order
-              </button>
+              </SubmitButton>
             </form>
           )}
         </div>

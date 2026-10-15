@@ -1,7 +1,9 @@
 import { getDishes } from '@/lib/dishes';
 import CartView from './CartView';
+import { NO_INDEX } from '@/lib/site';
 
-export const metadata = { title: 'Your Cart' };
+// One visitor's own page: kept out of search results.
+export const metadata = { title: 'Your Cart', robots: NO_INDEX };
 
 // The page itself is a static server component: it reads the public menu once and
 // hands it to CartView. The cart's contents are rendered on the client because they

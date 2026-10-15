@@ -66,6 +66,9 @@ app/
 ├── layout.js                 root shell (server) + Providers (client)
 ├── page.js                   /            static landing + today's specials
 ├── not-found.js              404 page (unknown URLs, /menu/not-a-dish)
+├── opengraph-image.js        the shared 1200×630 link card (text and colour only)
+├── sitemap.js                /sitemap.xml: home, menu and all 16 dishes
+├── robots.js                 /robots.txt: personal pages and /api/ disallowed
 ├── error.js                  error boundary for routes outside /menu
 ├── actions.js                server actions: placeOrder, cancelOrder
 ├── globals.css
@@ -88,7 +91,9 @@ app/
     └── payments/confirm/route.js  POST /api/payments/confirm (webhook)
 components/   shared by more than one route
 ├── Providers.jsx  NavLinks.jsx  CategoryBar.jsx  AddToCartButton.jsx  WishlistButton.jsx   (client)
+├── SubmitButton.jsx   server-action submit button, one request per tap                    (client)
 └── DishCard.jsx   DishList.jsx  CategoryList.jsx MenuToolbar.jsx                            (server / shared)
+scripts/check-live.mjs   checks a deployed URL
 lib/          data layer and shared logic
 ├── dishes.js        dish data source              (server-only)
 ├── orders.js        order store + status timeline (server-only)
@@ -97,6 +102,7 @@ lib/          data layer and shared logic
 ├── order-schema.js  the one validation schema     (shared)
 ├── pricing.js       totals, 60 ETB delivery        (shared)
 ├── cart-cookie.js   cart cookie format             (shared)
+├── site.js          public address per Vercel environment (shared)
 └── http.js          JSON error helper
 ```
 
@@ -349,3 +355,83 @@ of which ~9.4 kB is our own code. Dish data and dish markup ship as HTML, not Ja
   - the category `<select>` became the sidebar the brief asks for;
   - the order confirmation is a real, revisitable page (`/orders/[id]`) rather than
     navigation state.
+
+---
+
+## Ready to ship
+
+The last pass before deploying, the same one the finished Addis Eats app (`advanced_next_project`) went through. Checked on `next build && next start` in Chrome, with the app driven by keyboard and touch only.
+
+### Fixed
+
+- **Touch targets.** At phone width, up to 59 controls per page were smaller than 44 × 44px:
+  - nav links 31px
+  - category buttons 41px
+  - wishlist hearts 34px
+  - "Add" buttons 31px
+  - cart − / + 28px
+  - "Remove" 20px
+  - form fields 41px
+
+  Now there are **0** on every page.
+- **Badge text:** the cart and wishlist count badges went from 11px to 12px.
+- **Cancel order:**
+  - **The problem:** a double click sent **2** cancel requests, because the button only disabled itself after a re-render. Harmless, since the order ends up cancelled either way, but it should be one.
+  - **The fix:** `components/SubmitButton.jsx` disables the button while the action runs and ignores further clicks until it finishes. Now **1** request.
+  - **Still works without JavaScript:** it's still a plain server-action form.
+- **Link previews:**
+  - `metadataBase`, and a shared 1200×630 card in the app's green and gold (`app/opengraph-image.js`, text only, so building it never depends on another server).
+  - A large-image Twitter card.
+  - Canonical URLs on `/menu` and every dish.
+  - Dish pages keep the card image while setting their own title and description.
+- **Search engines:**
+  - `/sitemap.xml` (home, menu, 16 dishes).
+  - `/robots.txt` (cart, wishlist, checkout, orders and `/api/` disallowed).
+  - Personal pages are `noindex`.
+- **Site address:** `lib/site.js` uses `SITE_URL` if it's set. Otherwise it uses the Vercel build's own address: the production domain for Production, the preview URL for Preview.
+- **Missing-secret message:** it now says where to set the secret on Vercel, not only in `.env.local`.
+
+### Already right, and confirmed
+
+- **Keyboard-only order:** 16 Tabs to Doro Wat, then Enter. From there: add, cart, checkout, type every field, Enter. That lands on `/orders/AE-…`.
+- **Visible focus:** a 3px ring on all 149 Tab stops, plus a skip link. Focus jumps to the first invalid checkout field.
+- **Real controls:** every clickable thing is a link or a button.
+- **Place Order:** a double Enter, two simultaneous clicks or a touch double tap each send **1** order request.
+- **Responsive:** 8 pages × 5 widths (360 to 1440px) with no sideways scrolling and nothing cut off.
+
+### Pre-flight
+
+| | |
+|---|---|
+| `npm run build` | ✓ No errors; new routes `○ /opengraph-image`, `○ /robots.txt`, `○ /sitemap.xml` |
+| Variables documented in `.env.example` | ✓ `SESSION_SECRET`, `PAYMENT_WEBHOOK_SECRET` (required, 32+ characters), `SITE_URL` (optional) |
+| `.env.local` ignored by git | ✓ |
+| Secrets kept out of the browser | ✓ `.next/static` has 0 hits for either value, either name or `createHmac`. Over HTTP, the 15 JavaScript files the pages load (582 KB) have 0 hits |
+| Missing secret | ✓ Pages still load; ordering returns a generic 500; the log names the variable and where to set it on Vercel |
+| Real 404s | ✓ |
+| `scripts/check-live.mjs` on a local production build | ✓ Everything except "served over HTTPS", which only a deployment can pass |
+
+### Deploying to Vercel
+
+1. **Import the project:** <https://vercel.com/new> → import this repository → **Root Directory** `module-03-react-nextjs/foundation_project`. Framework: Next.js, with the default commands.
+2. **Settings → Environment Variables:**
+
+| | Production | Preview | Development |
+|---|---|---|---|
+| `SESSION_SECRET` | a fresh random value | a **different** fresh value | `.env.local` only |
+| `PAYMENT_WEBHOOK_SECRET` | the payment provider's shared secret | a separate test value | `.env.local` only |
+| `SITE_URL` | only for a custom domain | unset | unset |
+
+   Make each secret with `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"`.
+
+3. **Deploy, and redeploy after changing any variable.** Cards and the sitemap use the address from build time.
+4. **In a private window:**
+   - **Script:** `SESSION_SECRET=… PAYMENT_WEBHOOK_SECRET=… node scripts/check-live.mjs https://<your-app>.vercel.app`
+   - **By hand:**
+     - Order by keyboard with a double Enter, and check you get one order page.
+     - Watch the status change, then cancel with a double click (it stays cancelled).
+     - Check that `ae_session` is **HttpOnly, Secure, SameSite=Lax**.
+     - Paste a dish URL into a chat app to see the card.
+5. **Roll back:** Deployments → the last good one → **⋯ → Promote to Production**, or `vercel rollback`. Variable changes aren't rolled back.
+
+**Known limit:** orders live in server memory. On Vercel, separate serverless instances don't share it, so an order page can 404 or a status can reset between requests. A single `npm start` process has no such problem; a database is the fix.

@@ -4,8 +4,10 @@ import { CART_COOKIE, parseCart } from '@/lib/cart-cookie';
 import { findDish } from '@/lib/dishes';
 import { computeTotals, formatETB } from '@/lib/pricing';
 import CheckoutForm from './CheckoutForm';
+import { NO_INDEX } from '@/lib/site';
 
-export const metadata = { title: 'Checkout' };
+// One visitor's own page: kept out of search results.
+export const metadata = { title: 'Checkout', robots: NO_INDEX };
 
 // Dynamic, and correctly so: it reads the visitor's cart cookie on every request.
 // The order summary is priced on the server from the menu, so what the customer sees
